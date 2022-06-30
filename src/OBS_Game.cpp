@@ -92,7 +92,7 @@ void Game::game() {
                                         player.direction = Direction::Down;
                                         break;
 
-                                    case 54:
+                                    case 78:
                                         player.direction = Direction::Up;
                                         break;
 
@@ -565,30 +565,30 @@ void Game::game() {
         case GameState::Score:
             {
                 PD::setColor(7);
-                PD::drawBitmap(1, 22, Images::HighScore);
+                PD::drawBitmap(1, 16, Images::HighScore);
 
-                PD::setCursor(15, 31);
+                PD::setCursor(15, 25);
                 PD::print("Your Score  ");
                 if (PC::frameCount % 48 < 24 || player.score == 0) {
-                    PD::setCursor(69, 31);
+                    PD::setCursor(69, 25);
                     printScore(player.score);
                 }
 
-                PD::setCursor(15, 44);
+                PD::setCursor(15, 38);
                 PD::print("Top Scores");
 
                 if (scoreIndex != 0 || PC::frameCount % 48 < 24) {
-                    PD::setCursor(69, 44);
+                    PD::setCursor(69, 38);
                     this->printScore(this->cookie->score[0]);
                 }
 
                 if (scoreIndex != 1 || PC::frameCount % 48 < 24) {
-                    PD::setCursor(69, 53);
+                    PD::setCursor(69, 47);
                     this->printScore(this->cookie->score[1]);
                 }
 
                 if (scoreIndex != 2 || PC::frameCount % 48 < 24) {
-                    PD::setCursor(69, 62);
+                    PD::setCursor(69, 56);
                     this->printScore(this->cookie->score[2]);
                 }
 
