@@ -171,11 +171,11 @@ void Game::game() {
                 // Has the player hit a asteroid?
 
                 bool collision = false;
-                Rect playerRect = { 9, player.y, 12, 8 };
+                Rect playerRect = { 10, player.y + 1, 12, 8 };
 
                 for (Asteroid &largeAsteroid : largeAsteroids) {
 
-                    Rect asteroidRect = { largeAsteroid.x, largeAsteroid.y, 17, 17 };
+                    Rect asteroidRect = { largeAsteroid.x + 1, largeAsteroid.y + 1, 17, 17 };
 
                     if (collide(playerRect, asteroidRect)) {
 
@@ -226,7 +226,7 @@ void Game::game() {
 
                     for (Enemy &enemy : enemies) {
 
-                        Rect enemyRect = { enemy.x, enemy.y, 10, 11 };
+                        Rect enemyRect = { enemy.x + 1, enemy.y + 1, 10, 11 };
                         if (collide(playerRect, enemyRect)) {
 
                             if (player.health > 0)  {
@@ -612,7 +612,7 @@ void Game::checkBulletCollision(Bullet &bullet) {
 
     for (Asteroid &largeAsteroid : largeAsteroids) {
 
-        Rect asteroidRect = { largeAsteroid.x, largeAsteroid.y, 17, 17 };
+        Rect asteroidRect = { largeAsteroid.x + 1, largeAsteroid.y + 1, 17, 17 };
 
         if (collide(bulletRect, asteroidRect)) {
             bullet.hitObject = HitObject::LargeAsteroid;
@@ -628,7 +628,7 @@ void Game::checkBulletCollision(Bullet &bullet) {
 
     for (Enemy &enemy : enemies) {
 
-        Rect enemyRect = { enemy.x, enemy.y, 10, 11 };
+        Rect enemyRect = { enemy.x + 1, enemy.y + 1, 10, 11 };
 
         if (enemy.active && collide(bulletRect, enemyRect)) {
 

@@ -114,7 +114,7 @@ void Game::launchLargeAsteroid(Asteroid &asteroid) {
         asteroid.y = random(0, 70);
         asteroid.type = random(0, 2);
 
-        Rect asteroid1_Rect = { asteroid.x, asteroid.y, 19, 19 };
+        Rect asteroid1_Rect = { asteroid.x + 1, asteroid.y + 1, 17, 17 };
 
         bool collision = false;
 
@@ -247,7 +247,7 @@ void Game::launchEnemy(Enemy &enemy) {
         }
 
 
-        Rect enemy_Rect = { enemy.x, enemy.y, 6, 9 };
+        Rect enemy_Rect = { enemy.x + 1, enemy.y + 1, 9, 11 };
 
         bool collision = false;
 
@@ -276,7 +276,7 @@ void Game::launchEnemy(Enemy &enemy) {
 
                 if (enemy.x != enemy2.x || enemy.y != enemy2.y) {
 
-                    Rect enemy_Rect2 = { enemy2.x - 2, enemy2.y - 2, 8, 11 };
+                    Rect enemy_Rect2 = { enemy2.x - 2, enemy2.y - 2, 9, 11 };
 
                     if (collide(enemy_Rect, enemy_Rect2)) {
 
