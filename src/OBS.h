@@ -62,12 +62,12 @@ class Game {
         void introText(int8_t y);
         void launchEnemy(Enemy &enemy);
         void checkBulletCollision(Bullet &bullet);
-        void printScore(uint16_t score);
 
         void playTheme(Theme theme);
         void muteTheme();
         void playSoundEffect(SoundEffect soundEffect);
         bool collide(Rect rect1, Rect rect2);
+        void printScore(uint8_t x, uint8_t y, uint16_t score);
 
 };
 

@@ -295,7 +295,7 @@ void Game::game() {
 
             // Clear scores ..
 
-            if (PC::buttons.pressed(BTN_C)) {
+            if (PC::buttons.pressed(BTN_C) || PC::buttons.repeat(BTN_C, 1)) {
 
                 clearScores++;
 
@@ -341,18 +341,10 @@ void Game::game() {
     }
   
 
-    // Move and render starfield ..
+    // Move and render starfield and asteroids ..
 
     moveRenderStarfield();
-
-
-    // Move and render small asteroids ..
-
     moveRenderSmallAsteroids(false);
-
-
-    // Move and render large asteroids ..
-
     moveRenderLargeAsteroids(false);
 
 
@@ -556,7 +548,7 @@ void Game::game() {
 
                 PD::drawBitmap(66, 0, Images::Shield);
                 PD::setColor(6);
-                PD::drawFastHLine(91, 2, health_Bar);
+                PD::drawLine(91, 2, 91 + health_Bar, 2);
 
             }
 
@@ -565,31 +557,28 @@ void Game::game() {
         case GameState::Score:
             {
                 PD::setColor(7);
-                PD::drawBitmap(1, 16, Images::HighScore);
+                PD::drawBitmap(3, 16, Images::HighScore);
 
                 PD::setCursor(15, 25);
                 PD::print("Your Score  ");
+
                 if (PC::frameCount % 48 < 24 || player.score == 0) {
-                    PD::setCursor(69, 25);
-                    printScore(player.score);
+                    printScore(88, 25, player.score);
                 }
 
                 PD::setCursor(15, 38);
                 PD::print("Top Scores");
 
                 if (scoreIndex != 0 || PC::frameCount % 48 < 24) {
-                    PD::setCursor(69, 38);
-                    this->printScore(this->cookie->score[0]);
+                    this->printScore(88, 38, this->cookie->score[0]);
                 }
 
                 if (scoreIndex != 1 || PC::frameCount % 48 < 24) {
-                    PD::setCursor(69, 47);
-                    this->printScore(this->cookie->score[1]);
+                    this->printScore(88, 47, this->cookie->score[1]);
                 }
 
                 if (scoreIndex != 2 || PC::frameCount % 48 < 24) {
-                    PD::setCursor(69, 56);
-                    this->printScore(this->cookie->score[2]);
+                    this->printScore(88, 56, this->cookie->score[2]);
                 }
 
             }
@@ -653,12 +642,16 @@ void Game::checkBulletCollision(Bullet &bullet) {
 
 }
 
-void Game::printScore(uint16_t score) {
+void Game::printScore(uint8_t x, uint8_t y, uint16_t score) {
 
-    if (score < 10000)  PD::print("0");
-    if (score < 1000)   PD::print("0");
-    if (score < 100)    PD::print("0");
-    if (score < 10)     PD::print("0");
-    PD::print(score);
+    uint8_t digits[5] = {};
+    extractDigits(digits, score);
+
+    for (uint8_t j = 0; j < 5; ++j) {
+
+        PD::setCursor(x - (j * 5), y);
+        PD::print(static_cast<char>(48 + digits[j]));
+
+    }
 
 }

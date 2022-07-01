@@ -155,7 +155,7 @@ void Game::title() {
 
             titleScreenVars.counter--;
             PD::drawBitmap(24, 19 - (88 - titleScreenVars.counter), Images::Title);
-            PD::drawBitmap(1, 88 + 20 - (88 - titleScreenVars.counter), Images::Scenario);
+            PD::drawBitmap(3, 88 + 20 - (88 - titleScreenVars.counter), Images::Scenario);
 
             if (titleScreenVars.counter == 0) {
 
@@ -167,7 +167,7 @@ void Game::title() {
 
         case TitleMode::Scenario:
 
-            PD::drawBitmap(1, 20, Images::Scenario);
+            PD::drawBitmap(3, 20, Images::Scenario);
 
             if (titleScreenVars.index < textLengths[titleScreenVars.panel] && PC::frameCount % 6 == 0) {
                 
@@ -185,14 +185,8 @@ void Game::title() {
 
             titleScreenVars.panel = 3;
             titleScreenVars.counter--;
-            PD::drawBitmap(1, 20 - (88 - titleScreenVars.counter), Images::Scenario);
+            PD::drawBitmap(3, 20 - (88 - titleScreenVars.counter), Images::Scenario);
 
-            // PD::setCursor(14, 30 - (88 - titleScreenVars.counter));
-            // PD::print("..sort of! Avoid the");
-            // PD::setCursor(12, 40 - (88 - titleScreenVars.counter));
-            // PD::print("asteroids and enemy");
-            // PD::setCursor(15, 50 - (88 - titleScreenVars.counter));
-            // PD::print("ships and fly home.");
             introText(20 - (88 - titleScreenVars.counter));
 
             if (titleScreenVars.counter == 0) {

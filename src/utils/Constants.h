@@ -6,7 +6,7 @@ namespace Constants {
 
     constexpr uint8_t StarField_Size = 10;
     constexpr uint8_t SmallAsteroid_Size = 5;
-    constexpr uint8_t LargeAsteroid_Size = 3;
+    constexpr uint8_t LargeAsteroid_Size = 4;
     constexpr uint8_t Enemy_Size = 4;
     constexpr uint8_t Health_Factor = 8;
     constexpr uint8_t ScoreDistance = 96;
