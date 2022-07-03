@@ -75,7 +75,7 @@ void Game::title_Init() {
     player.reset();
 
     #ifdef SOUNDS
-        tunes.playScore(Sounds::Title);
+        playTheme(Theme::Main);
     #endif
 }   
 
@@ -92,7 +92,7 @@ void Game::title() {
             case TitleMode::OBS:
 
                 #ifdef SOUNDS
-                    tunes.stopScore();
+                    muteTheme();
                 #endif
 
                 titleScreenVars.mode = TitleMode::Scroll_One;
@@ -115,6 +115,8 @@ void Game::title() {
 
     }
 
+
+
       
     // Move and render starfield ..
 
@@ -124,6 +126,45 @@ void Game::title() {
     switch (titleScreenVars.mode) {
 
         case TitleMode::OBS:
+
+            if (PC::buttons.pressed(BTN_UP)) { 
+
+                this->cookie->sfx--;
+                this->cookie->saveCookie();
+                // this->titleScreenVars.soundCounter = 64;
+
+                if (this->cookie->sfx != SoundEffects::Both && this->cookie->sfx != SoundEffects::Music) {
+
+                    this->muteTheme();
+                    
+                }
+                else {
+
+                    this->playTheme(Theme::Main);
+
+                }
+
+            }
+
+            if (PC::buttons.pressed(BTN_DOWN)) { 
+
+                this->cookie->sfx++;
+                this->cookie->saveCookie();
+                // this->titleScreenVars.soundCounter = 64;
+
+                if (this->cookie->sfx != SoundEffects::Both && this->cookie->sfx != SoundEffects::Music) {
+
+                    this->muteTheme();
+                    
+                }
+                else {
+
+                    this->playTheme(Theme::Main);
+
+                }
+
+            }
+
 
             moveRenderSmallAsteroids(true);
             moveRenderLargeAsteroids(true);
@@ -149,6 +190,28 @@ void Game::title() {
                 }
                 
             }            
+
+            switch (this->cookie->sfx) {
+
+                case SoundEffects::Both:
+                    PD::drawBitmap(95, 81, Images::Sound_Both_White);
+                    break;
+
+                case SoundEffects::None:
+                    PD::drawBitmap(95, 81, Images::Sound_None_White);
+                    break;
+
+                case SoundEffects::SFX:
+                    PD::drawBitmap(95, 81, Images::Sound_SFX_White);
+                    break;
+
+                case SoundEffects::Music:
+                    PD::drawBitmap(95, 81, Images::Sound_Music_White);
+                    break;
+
+                
+            }
+            
             break;
 
         case TitleMode::Scroll_One:
@@ -172,7 +235,7 @@ void Game::title() {
             if (titleScreenVars.index < textLengths[titleScreenVars.panel] && PC::frameCount % 6 == 0) {
                 
                 #ifdef SOUNDS                
-                    tunes.playScore(Sounds::Keypress);
+                    playSoundEffect(SoundEffect::KeyPress);
                 #endif
 
             }
@@ -221,7 +284,7 @@ void Game::introText(int8_t y) {
 
     uint8_t line = 0;
     uint8_t x = 0;
-    
+
     for (uint8_t i = 0; i < titleScreenVars.index; i++) {
 
         uint8_t c = IntroTexts[titleScreenVars.panel][i];

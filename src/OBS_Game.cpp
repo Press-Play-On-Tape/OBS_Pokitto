@@ -116,7 +116,7 @@ void Game::game() {
                         bullet.muzzleIndex = 8;
 
                         #ifdef SOUNDS
-                            tunes.playScore(Sounds::PlayerFiresBullet);
+                            playSoundEffect(SoundEffect::Laser);
                         #endif
                         bullet.hitObject = HitObject::None;
 
@@ -183,14 +183,14 @@ void Game::game() {
                             player.health--;
 
                             #ifdef SOUNDS
-                                tunes.playScore(Sounds::PlayerHit);
+                                playSoundEffect(SoundEffect::Player_Hit);
                             #endif                            
                             
                             if (player.health == 0) {
                                 player.explodeCounter = 21;
 
                                 #ifdef SOUNDS
-                                    tunes.playScore(Sounds::PlayerDies);
+                                    playSoundEffect(SoundEffect::Mini_Explosion);
                                 #endif         
                             }
 
@@ -233,14 +233,14 @@ void Game::game() {
                                 player.health--;
 
                                 #ifdef SOUNDS
-                                    tunes.playScore(Sounds::PlayerHit);
+                                    playSoundEffect(SoundEffect::Mini_Explosion);
                                 #endif
                             
                                 if (player.health == 0) {
                                     player.explodeCounter = 21;
 
                                     #ifdef SOUNDS
-                                        tunes.playScore(Sounds::PlayerDies);
+//                                        tunes.playScore(Sounds::PlayerDies);
                                     #endif  
                                 }
 
@@ -313,7 +313,7 @@ void Game::game() {
                         cookie->reset();
 
                         #ifdef SOUNDS
-                            tunes.playScore(Sounds::Beep);
+                            playSoundEffect(SoundEffect::KeyPress);
                         #endif
                         
                         return;
@@ -556,7 +556,7 @@ void Game::game() {
 
         case GameState::Score:
             {
-                PD::setColor(7);
+                PD::setColor(9);
                 PD::drawBitmap(3, 16, Images::HighScore);
 
                 PD::setCursor(15, 25);
@@ -633,7 +633,7 @@ void Game::checkBulletCollision(Bullet &bullet) {
             PC::setFrameRate(50 + (player.score / 24));
 
             #ifdef SOUNDS
-                tunes.playScore(Sounds::EnemyExplosion);
+                playSoundEffect(SoundEffect::Mini_Explosion);
             #endif            
 
         }

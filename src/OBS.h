@@ -26,6 +26,8 @@ class Game {
 
         Bullets bullets;
 
+        File mainThemeFile;
+        
         int8_t xOffset = 0;
         int8_t yOffset = 0;
         uint8_t offsetCount = 0;

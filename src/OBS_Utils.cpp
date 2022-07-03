@@ -10,7 +10,7 @@ void Game::playTheme(Theme theme) {
 
     #ifdef SOUNDS
 
-    constexpr char themes[2][19] = { "music/1nvad_00.raw", "music/1nvad_01.raw" };
+    constexpr char themes[1][17] = { "music/OBS_00.raw" };
 
     switch (this->cookie->sfx) {
 
@@ -48,8 +48,6 @@ void Game::playSoundEffect(SoundEffect soundEffect) {
 
     #ifdef SOUNDS
 
-    constexpr char themes[1][19] = { "music/1nvad_00.raw" };
-
     switch (this->cookie->sfx) {
 
         case SoundEffects::SFX:
@@ -64,21 +62,17 @@ void Game::playSoundEffect(SoundEffect soundEffect) {
                 case SoundEffect::Mini_Explosion:
                     Audio::play<1>(Sounds::sfx_Mini_Explosion);    
                     break;
-                                
-                case SoundEffect::Level_Cleared:
-                    Audio::play<1>(Sounds::sfx_Level_Cleared);    
-                    break;
-                
-                case SoundEffect::Bomb_HitGround:
-                    Audio::play<1>(Sounds::sfx_Bomb_HitGround);    
-                    break;
-                
-                case SoundEffect::Drop_Bomb:
-                    Audio::play<1>(Sounds::sfx_Drop_Bomb);    
+                                           
+                case SoundEffect::KeyPress:
+                    Audio::play<1>(Sounds::sfx_Typewriter);    
                     break;
                 
                 case SoundEffect::Player_Hit:
                     Audio::play<1>(Sounds::sfx_Player_Hit);    
+                    break;
+                
+                case SoundEffect::Game_Over:
+                    Audio::play<1>(Sounds::sfx_Game_Over);    
                     break;
 
             }
