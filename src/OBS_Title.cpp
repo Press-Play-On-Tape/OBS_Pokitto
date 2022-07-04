@@ -169,7 +169,7 @@ void Game::title() {
             moveRenderSmallAsteroids(true);
             moveRenderLargeAsteroids(true);
 
-            PD::drawBitmap(24, 19, Images::Title);
+            PD::drawBitmap(24, 26, Images::Title);
 
             for (uint8_t i = 0; i < Constants::SmallAsteroid_Size; i++) {
 
@@ -217,7 +217,7 @@ void Game::title() {
         case TitleMode::Scroll_One:
 
             titleScreenVars.counter--;
-            PD::drawBitmap(24, 19 - (88 - titleScreenVars.counter), Images::Title);
+            PD::drawBitmap(24, 26 - (88 - titleScreenVars.counter), Images::Title);
             PD::drawBitmap(3, 88 + 20 - (88 - titleScreenVars.counter), Images::Scenario);
 
             if (titleScreenVars.counter == 0) {
