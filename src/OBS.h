@@ -54,8 +54,6 @@ class Game {
         void game();
         void title_Init();
         void title();
-        void gameOver_Init();
-        void gameOver();
 
         void launchLargeAsteroid(Asteroid &asteroid);
         void moveRenderStarfield();

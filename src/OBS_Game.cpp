@@ -556,8 +556,13 @@ void Game::game() {
 
         case GameState::Score:
             {
-                PD::setColor(9);
-                PD::drawBitmap(3, 16, Images::HighScore);
+                #ifdef NEW_GRAPHICS
+                    PD::setColor(11);
+                    PD::drawBitmap(3, 16, Images::HighScore_New);
+                #else
+                    PD::setColor(9);
+                    PD::drawBitmap(3, 16, Images::HighScore);
+                #endif
 
                 PD::setCursor(15, 25);
                 PD::print("Your Score  ");

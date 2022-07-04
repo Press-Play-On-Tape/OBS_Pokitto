@@ -2,6 +2,7 @@
 
 #define SOUNDS
 #define COOKIE_INITIALISED 39
+#define NEW_GRAPHICS
 
 enum class SoundEffects : uint8_t {
     Both,

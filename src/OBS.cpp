@@ -50,17 +50,6 @@ void Game::loop() {
             game();
             break;
             
-        case GameState::GameOver_Init:
-
-            gameOver_Init();
-            gameOver();
-            break;
-
-        case GameState::GameOver:
-
-            gameOver();
-            break;
-
     }
 
 }

@@ -121,7 +121,12 @@ void Game::title() {
     // Move and render starfield ..
 
     moveRenderStarfield();
-    PD::setColor(9);
+
+    #ifdef NEW_GRAPHICS
+        PD::setColor(11);
+    #else
+        PD::setColor(9);
+    #endif
 
     switch (titleScreenVars.mode) {
 
@@ -218,7 +223,12 @@ void Game::title() {
 
             titleScreenVars.counter--;
             PD::drawBitmap(24, 26 - (88 - titleScreenVars.counter), Images::Title);
-            PD::drawBitmap(3, 88 + 20 - (88 - titleScreenVars.counter), Images::Scenario);
+
+            #ifdef NEW_GRAPHICS
+                PD::drawBitmap(3, 88 + 20 - (88 - titleScreenVars.counter), Images::Scenario_New);
+            #else
+                PD::drawBitmap(3, 88 + 20 - (88 - titleScreenVars.counter), Images::Scenario);
+            #endif
 
             if (titleScreenVars.counter == 0) {
 
@@ -230,7 +240,11 @@ void Game::title() {
 
         case TitleMode::Scenario:
 
-            PD::drawBitmap(3, 20, Images::Scenario);
+            #ifdef NEW_GRAPHICS
+                PD::drawBitmap(3, 20, Images::Scenario_New);
+            #else
+                PD::drawBitmap(3, 20, Images::Scenario);
+            #endif
 
             if (titleScreenVars.index < textLengths[titleScreenVars.panel] && PC::frameCount % 6 == 0) {
                 
@@ -248,7 +262,12 @@ void Game::title() {
 
             titleScreenVars.panel = 3;
             titleScreenVars.counter--;
-            PD::drawBitmap(3, 20 - (88 - titleScreenVars.counter), Images::Scenario);
+
+            #ifdef NEW_GRAPHICS
+                PD::drawBitmap(3, 20 - (88 - titleScreenVars.counter), Images::Scenario_New);
+            #else
+                PD::drawBitmap(3, 20 - (88 - titleScreenVars.counter), Images::Scenario);
+            #endif
 
             introText(20 - (88 - titleScreenVars.counter));
 
