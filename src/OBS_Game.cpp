@@ -33,7 +33,7 @@ void Game::game_Init() {
 
     player.reset();
     gameState = GameState::Game;
-    scoreIndex = 0;
+    gameScreenVars.reset();
     PC::setFrameRate(50);
 
 }   
@@ -205,16 +205,16 @@ void Game::game() {
 
                 if (collision) {
 
-                    offsetCount++;
+                    gameScreenVars.offsetCount++;
 
-                    if (offsetCount > 4) {
+                    if (gameScreenVars.offsetCount > 4) {
 
-                        offsetCount = 1;
+                        gameScreenVars.offsetCount = 1;
 
                     }
 
-                    xOffset = xOffsets[offsetCount - 1];
-                    yOffset = yOffsets[offsetCount - 1];
+                    gameScreenVars.xOffset = xOffsets[gameScreenVars.offsetCount - 1];
+                    gameScreenVars.yOffset = yOffsets[gameScreenVars.offsetCount - 1];
                     
                     // arduboy.invert(offsetCount % 2);
 
@@ -255,25 +255,25 @@ void Game::game() {
 
                     if (collision) {
 
-                        offsetCount++;
+                        gameScreenVars.offsetCount++;
 
-                        if (offsetCount > 4) {
+                        if (gameScreenVars.offsetCount > 4) {
 
-                            offsetCount = 1;
+                            gameScreenVars.offsetCount = 1;
 
                         }
 
-                        xOffset = xOffsets[offsetCount - 1];
-                        yOffset = yOffsets[offsetCount - 1];
+                        gameScreenVars.xOffset = xOffsets[gameScreenVars.offsetCount - 1];
+                        gameScreenVars.yOffset = yOffsets[gameScreenVars.offsetCount - 1];
                         
                         // arduboy.invert(offsetCount % 2);
 
                     }
                     else {
 
-                        offsetCount = 0;
-                        xOffset = 0;
-                        yOffset = 0;
+                        gameScreenVars.offsetCount = 0;
+                        gameScreenVars.xOffset = 0;
+                        gameScreenVars.yOffset = 0;
                         // arduboy.invert(false);
 
                     }
@@ -286,9 +286,18 @@ void Game::game() {
 
         case GameState::Score:
 
-            if (PC::buttons.pressed(BTN_A) || PC::buttons.pressed(BTN_B) || PC::buttons.pressed(BTN_LEFT) || PC::buttons.pressed(BTN_RIGHT) || PC::buttons.pressed(BTN_UP) || PC::buttons.pressed(BTN_DOWN)) {
+            if (gameScreenVars.highScoreCounter == 0) {
 
-                gameState = GameState::Title_Init;
+                if (PC::buttons.pressed(BTN_A) || PC::buttons.pressed(BTN_B) || PC::buttons.pressed(BTN_LEFT) || PC::buttons.pressed(BTN_RIGHT) || PC::buttons.pressed(BTN_UP) || PC::buttons.pressed(BTN_DOWN)) {
+
+                    gameState = GameState::Title_Init;
+
+                }
+
+            }
+            else {
+
+                gameScreenVars.highScoreCounter--;
 
             }
 
@@ -297,18 +306,18 @@ void Game::game() {
 
             if (PC::buttons.pressed(BTN_C) || PC::buttons.repeat(BTN_C, 1)) {
 
-                clearScores++;
+                gameScreenVars.clearScores++;
 
-                switch (clearScores) {
+                switch (gameScreenVars.clearScores) {
 
                     case 21 ... 60:
                         //arduboy.setRGBled(128 - (clearScores * 2), 0, 0);
                         break;
 
                     case 61:
-                        clearScores = 0;
+                        gameScreenVars.clearScores = 0;
+                        gameScreenVars.scoreIndex = 255;
                         player.score = 0;
-                        scoreIndex = 255;
                         //arduboy.setRGBled(0, 0, 0);
                         cookie->reset();
 
@@ -323,10 +332,10 @@ void Game::game() {
             }
             else {
 
-                if (clearScores > 0) {
+                if (gameScreenVars.clearScores > 0) {
                 
                     //arduboy.setRGBled(0, 0, 0);
-                    clearScores = 0;
+                    gameScreenVars.clearScores = 0;
 
                 }
             
@@ -450,13 +459,13 @@ void Game::game() {
 
         if (enemy.getActive() || enemy.explodeCounter > 16) {
 
-            PD::drawBitmap(enemy.x + xOffset, enemy.y + yOffset, Images::Enemy);
+            PD::drawBitmap(enemy.x + gameScreenVars.xOffset, enemy.y + gameScreenVars.yOffset, Images::Enemy);
 
         }
 
         if (enemy.explodeCounter > 0) {
 
-            PD::drawBitmap(enemy.x + xOffset - 3, enemy.y + yOffset, Images::Puffs[(21 - enemy.explodeCounter) / 3]);
+            PD::drawBitmap(enemy.x +gameScreenVars. xOffset - 3, enemy.y + gameScreenVars.yOffset, Images::Puffs[(21 - enemy.explodeCounter) / 3]);
 
         }
         
@@ -478,21 +487,22 @@ void Game::game() {
 
                 if (player.health > 0 || player.explodeCounter > 16) {
 
-                    PD::drawBitmap(9 + xOffset, player.y + yOffset, Images::PlayerShip);
-                    PD::drawBitmap(xOffset, player.y + 3 + yOffset, Images::ShipParticle[PC::frameCount % 8 < 4]);
+                    PD::drawBitmap(9 + gameScreenVars.xOffset, player.y + gameScreenVars.yOffset, Images::PlayerShip);
+                    PD::drawBitmap(gameScreenVars.xOffset, player.y + 3 + gameScreenVars.yOffset, Images::ShipParticle[PC::frameCount % 8 < 4]);
 
                 }
                 
                 if (player.explodeCounter > 0) {
 
-                    PD::drawBitmap(6, player.y + yOffset, Images::Puffs[(21 - player.explodeCounter) / 3]);
+                    PD::drawBitmap(6, player.y + gameScreenVars.yOffset, Images::Puffs[(21 - player.explodeCounter) / 3]);
 
                 }
                 
                 if (player.updateExplosion()) {
                 
                     gameState = GameState::Score;
-                    scoreIndex = cookie->saveScore(player.score);
+                    gameScreenVars.highScoreCounter = 64;
+                    gameScreenVars.scoreIndex = cookie->saveScore(player.score);
 
                 }
 
@@ -505,7 +515,7 @@ void Game::game() {
                             
                         if (bullet.muzzleIndex > 1) {
 
-                            PD::drawBitmap(bullet.x + xOffset, bullet.y + yOffset, Images::Muzzle[3 - (bullet.muzzleIndex / 2)]);
+                            PD::drawBitmap(bullet.x + gameScreenVars.xOffset, bullet.y + gameScreenVars.yOffset, Images::Muzzle[3 - (bullet.muzzleIndex / 2)]);
 
                         }
                         else {
@@ -513,11 +523,11 @@ void Game::game() {
                             switch (bullet.hitCount) {
 
                                 case 0:
-                                    PD::drawBitmap(bullet.x + xOffset, bullet.y + yOffset, Images::Bullet);
+                                    PD::drawBitmap(bullet.x + gameScreenVars.xOffset, bullet.y + gameScreenVars.yOffset, Images::Bullet);
                                     break;
 
                                 default:
-                                    PD::drawBitmap(bullet.x + xOffset, bullet.y - 5 + yOffset, Images::Hit[bullet.hitCount - 1]);
+                                    PD::drawBitmap(bullet.x + gameScreenVars.xOffset, bullet.y - 5 + gameScreenVars.yOffset, Images::Hit[bullet.hitCount - 1]);
                                     break;
 
                             }
@@ -574,15 +584,15 @@ void Game::game() {
                 PD::setCursor(15, 38);
                 PD::print("Top Scores");
 
-                if (scoreIndex != 0 || PC::frameCount % 48 < 24) {
+                if (gameScreenVars.scoreIndex != 0 || PC::frameCount % 48 < 24) {
                     this->printScore(88, 38, this->cookie->score[0]);
                 }
 
-                if (scoreIndex != 1 || PC::frameCount % 48 < 24) {
+                if (gameScreenVars.scoreIndex != 1 || PC::frameCount % 48 < 24) {
                     this->printScore(88, 47, this->cookie->score[1]);
                 }
 
-                if (scoreIndex != 2 || PC::frameCount % 48 < 24) {
+                if (gameScreenVars.scoreIndex != 2 || PC::frameCount % 48 < 24) {
                     this->printScore(88, 56, this->cookie->score[2]);
                 }
 

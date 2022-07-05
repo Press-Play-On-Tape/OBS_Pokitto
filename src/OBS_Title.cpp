@@ -181,7 +181,7 @@ void Game::title() {
                 Asteroid &smallAsteroid = smallAsteroids[i];
 
                 if (i % 2 == 1) {
-                    PD::drawBitmap(smallAsteroid.x + xOffset, smallAsteroid.y + yOffset, Images::SmallAsteroid);
+                    PD::drawBitmap(smallAsteroid.x, smallAsteroid.y, Images::SmallAsteroid);
                 }
                 
             }
@@ -191,7 +191,7 @@ void Game::title() {
                 Asteroid &largeAsteroid = largeAsteroids[i];
                             
                 if (i % 2 == 1) {
-                    PD::drawBitmap(largeAsteroid.x + xOffset, largeAsteroid.y + yOffset, Images::BigAsteroid[largeAsteroid.type]);
+                    PD::drawBitmap(largeAsteroid.x, largeAsteroid.y, Images::BigAsteroid[largeAsteroid.type]);
                 }
                 
             }            

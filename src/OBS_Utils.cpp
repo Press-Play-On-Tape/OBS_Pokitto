@@ -152,7 +152,7 @@ void Game::moveRenderStarfield() {
         }
 
         PD::setColor(6 + random(0, 2));
-        PD::drawPixel(star.x + xOffset, star.y + yOffset);
+        PD::drawPixel(star.x + gameScreenVars.xOffset, star.y + gameScreenVars.yOffset);
         
     }
 
@@ -179,7 +179,7 @@ void Game::moveRenderSmallAsteroids(bool alternate) {
         }
 
         if (!alternate || (i % 2 == 0)) {
-            PD::drawBitmap(smallAsteroid.x + xOffset, smallAsteroid.y + yOffset, Images::SmallAsteroid);
+            PD::drawBitmap(smallAsteroid.x + gameScreenVars.xOffset, smallAsteroid.y + gameScreenVars.yOffset, Images::SmallAsteroid);
         }
         
     }
@@ -206,7 +206,7 @@ void Game::moveRenderLargeAsteroids(bool alternate) {
 
 
         if (!alternate || (i % 2 == 0)) {
-            PD::drawBitmap(largeAsteroid.x + xOffset, largeAsteroid.y + yOffset, Images::BigAsteroid[largeAsteroid.type]);
+            PD::drawBitmap(largeAsteroid.x + gameScreenVars.xOffset, largeAsteroid.y + gameScreenVars.yOffset, Images::BigAsteroid[largeAsteroid.type]);
         }
         
     }

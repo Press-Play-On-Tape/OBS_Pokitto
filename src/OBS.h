@@ -23,19 +23,13 @@ class Game {
         Asteroid largeAsteroids[Constants::LargeAsteroid_Size];
         Enemy enemies[Constants::Enemy_Size];
         Player player;
-
         Bullets bullets;
 
         File mainThemeFile;
-        
-        int8_t xOffset = 0;
-        int8_t yOffset = 0;
-        uint8_t offsetCount = 0;
-        uint8_t scoreIndex = 0;
-        uint8_t clearScores = 0;
 
         SplashScreenVars splashScreenVariables;
         TitleScreenVars titleScreenVars;
+        GameScreenVars gameScreenVars;
         GameCookie *cookie;
 
         GameState gameState = GameState::Splash_Init;

@@ -33,6 +33,28 @@ struct TitleScreenVars {
 
 };
 
+struct GameScreenVars {
+
+    int8_t xOffset = 0;
+    int8_t yOffset = 0;
+    uint8_t offsetCount = 0;
+    uint8_t scoreIndex = 0;
+    uint8_t clearScores = 0;
+    uint8_t highScoreCounter = 0;
+
+    void reset() {
+
+        this->xOffset = 0;
+        this->yOffset = 0;
+        this->offsetCount = 0;
+        this->scoreIndex = 0;
+        this->clearScores = 0;
+        this->highScoreCounter = 0;
+
+    }
+
+};
+
 struct Asteroid : public Point {
 
     uint8_t type = 0;
