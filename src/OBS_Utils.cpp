@@ -107,6 +107,7 @@ void Game::launchLargeAsteroid(Asteroid &asteroid) {
         asteroid.x = 110 + random(0, 96);
         asteroid.y = random(0, 70);
         asteroid.type = random(0, 2);
+        asteroid.active = true;
 
         Rect asteroid1_Rect = { asteroid.x + 1, asteroid.y + 1, 17, 17 };
 
@@ -160,6 +161,23 @@ void Game::moveRenderStarfield() {
 
 void Game::moveRenderSmallAsteroids(bool alternate) {
 
+    bool launch = true;
+
+    switch (this->gameState) {
+
+        case GameState::Game_Init:
+        case GameState::Game:
+        case GameState::Game_EnemyLeaving:
+        case GameState::Game_BossLeaving:
+        case GameState::Score:
+            break;
+
+        default:
+            launch = false;
+            break;
+
+    }
+
 
     // Move and render small asteroids ..
 
@@ -169,17 +187,25 @@ void Game::moveRenderSmallAsteroids(bool alternate) {
 
         if (PC::frameCount % 3 == 0) {
 
-            smallAsteroid.x--;
-
-            if (smallAsteroid.x == -9) {
+            if (smallAsteroid.x > Constants::SmallAsteroid_OffScreen) smallAsteroid.x--;
+            
+            if (smallAsteroid.x == Constants::SmallAsteroid_OffScreen && launch) {
                 smallAsteroid.x = 110 + random(0, 96);
                 smallAsteroid.y = random(0, 80);
+                smallAsteroid.active = true;
+            }
+            else {
+                smallAsteroid.active = false;
             }
 
         }
 
         if (!alternate || (i % 2 == 0)) {
-            PD::drawBitmap(smallAsteroid.x + gameScreenVars.xOffset, smallAsteroid.y + gameScreenVars.yOffset, Images::SmallAsteroid);
+
+            if (smallAsteroid.active) {
+                PD::drawBitmap(smallAsteroid.x + gameScreenVars.xOffset, smallAsteroid.y + gameScreenVars.yOffset, Images::SmallAsteroid);
+            }
+
         }
         
     }
@@ -188,25 +214,50 @@ void Game::moveRenderSmallAsteroids(bool alternate) {
 
 void Game::moveRenderLargeAsteroids(bool alternate) {
 
+    bool launch = true;
+
+    switch (this->gameState) {
+
+        case GameState::Game_Init:
+        case GameState::Game:
+        case GameState::Game_EnemyLeaving:
+        case GameState::Game_BossLeaving:
+        case GameState::Score:
+            break;
+
+        default:
+            launch = false;
+            break;
+
+    }
+
     for (uint8_t i = 0; i < Constants::LargeAsteroid_Size; i++) {
     
         Asteroid &largeAsteroid = largeAsteroids[i];
 
         if (PC::frameCount % 2 == 0) {
 
-            largeAsteroid.x--;
+            if (largeAsteroid.x > Constants::LargeAsteroid_OffScreen) largeAsteroid.x--;
 
-            if (largeAsteroid.x == -19) {
+            if (largeAsteroid.x == Constants::LargeAsteroid_OffScreen && launch) {
 
                 launchLargeAsteroid(largeAsteroid);
 
             }
+            else {
+                largeAsteroid.active = false;
+            }
 
         }
 
-
         if (!alternate || (i % 2 == 0)) {
-            PD::drawBitmap(largeAsteroid.x + gameScreenVars.xOffset, largeAsteroid.y + gameScreenVars.yOffset, Images::BigAsteroid[largeAsteroid.type]);
+
+            if (largeAsteroid.active) {
+
+                PD::drawBitmap(largeAsteroid.x + gameScreenVars.xOffset, largeAsteroid.y + gameScreenVars.yOffset, Images::BigAsteroid[largeAsteroid.type]);
+
+            }
+
         }
         
     }
@@ -214,6 +265,19 @@ void Game::moveRenderLargeAsteroids(bool alternate) {
 }
 
 void Game::launchEnemy(Enemy &enemy) {
+
+    switch (this->gameState) {
+
+        case GameState::Game_Init:
+        case GameState::Game:
+        case GameState::Game_BossLeaving:
+        case GameState::Score:
+            break;
+
+        default:
+            return;
+
+    }
 
     while (true) {
 
@@ -286,6 +350,84 @@ void Game::launchEnemy(Enemy &enemy) {
         }
 
         if (!collision) break;                    
+
+    }
+
+}
+
+
+void Game::checkBulletCollision(Bullet &bullet) {
+
+
+    // Has the bullet hit a large asteroid?
+
+    Rect bulletRect = { bullet.x + 1, bullet.y + 1, 7, 5 };
+
+    for (Asteroid &largeAsteroid : largeAsteroids) {
+
+        Rect asteroidRect = { largeAsteroid.x + 1, largeAsteroid.y + 1, 17, 17 };
+
+        if (collide(bulletRect, asteroidRect)) {
+            bullet.hitObject = HitObject::LargeAsteroid;
+            bullet.hitCount = 1;
+            bullet.muzzleIndex = 0;
+            bullet.x = largeAsteroid.x - 4;
+        }
+
+    }
+
+
+    // Has the bullet hit an enemy?
+
+    for (Enemy &enemy : enemies) {
+
+        Rect enemyRect = { enemy.x + 1, enemy.y + 1, 10, 11 };
+
+        if (enemy.active && collide(bulletRect, enemyRect)) {
+
+            bullet.hitObject = HitObject::Enemy;
+            bullet.hitCount = 1;
+            bullet.muzzleIndex = 0;
+            bullet.x = enemy.x - 4;
+
+            enemy.explodeCounter = 21;
+            enemy.active = false;
+            player.score = player.score + 5;
+
+            PC::setFrameRate(50 + (player.score / 24));
+
+            #ifdef SOUNDS
+                playSoundEffect(SoundEffect::Mini_Explosion);
+            #endif            
+
+        }
+
+    }
+
+
+    // Has the bullet hit a boss ?
+
+    if (this->boss.getActive()) {
+
+        Rect enemyRect = { boss.x + 1, boss.y + 10, 2, 11 };
+
+    }
+
+
+
+    
+
+}
+
+void Game::printScore(uint8_t x, uint8_t y, uint16_t score) {
+
+    uint8_t digits[5] = {};
+    extractDigits(digits, score);
+
+    for (uint8_t j = 0; j < 5; ++j) {
+
+        PD::setCursor(x - (j * 5), y);
+        PD::print(static_cast<char>(48 + digits[j]));
 
     }
 

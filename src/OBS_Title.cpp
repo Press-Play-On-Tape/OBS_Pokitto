@@ -55,6 +55,7 @@ void Game::title_Init() {
 
         smallAsteroid.x = random(0, 256);
         smallAsteroid.y = random(0, 56);
+        smallAsteroid.active = true;
         
     }
 
@@ -121,12 +122,7 @@ void Game::title() {
     // Move and render starfield ..
 
     moveRenderStarfield();
-
-    #ifdef NEW_GRAPHICS
-        PD::setColor(11);
-    #else
-        PD::setColor(9);
-    #endif
+    PD::setColor(11);
 
     switch (titleScreenVars.mode) {
 
@@ -180,8 +176,12 @@ void Game::title() {
 
                 Asteroid &smallAsteroid = smallAsteroids[i];
 
-                if (i % 2 == 1) {
-                    PD::drawBitmap(smallAsteroid.x, smallAsteroid.y, Images::SmallAsteroid);
+                if (smallAsteroid.active) {
+
+                    if (i % 2 == 1) {
+                        PD::drawBitmap(smallAsteroid.x, smallAsteroid.y, Images::SmallAsteroid);
+                    }
+
                 }
                 
             }
@@ -189,11 +189,15 @@ void Game::title() {
             for (uint8_t i = 0; i < Constants::LargeAsteroid_Size; i++) {
             
                 Asteroid &largeAsteroid = largeAsteroids[i];
-                            
-                if (i % 2 == 1) {
-                    PD::drawBitmap(largeAsteroid.x, largeAsteroid.y, Images::BigAsteroid[largeAsteroid.type]);
+
+                if (largeAsteroid.active) {
+                                
+                    if (i % 2 == 1) {
+                        PD::drawBitmap(largeAsteroid.x, largeAsteroid.y, Images::BigAsteroid[largeAsteroid.type]);
+                    }
+
                 }
-                
+                    
             }            
 
             switch (this->cookie->sfx) {
@@ -223,12 +227,7 @@ void Game::title() {
 
             titleScreenVars.counter--;
             PD::drawBitmap(24, 26 - (88 - titleScreenVars.counter), Images::Title);
-
-            #ifdef NEW_GRAPHICS
-                PD::drawBitmap(3, 88 + 20 - (88 - titleScreenVars.counter), Images::Scenario_New);
-            #else
-                PD::drawBitmap(3, 88 + 20 - (88 - titleScreenVars.counter), Images::Scenario);
-            #endif
+            PD::drawBitmap(3, 88 + 20 - (88 - titleScreenVars.counter), Images::Scenario);
 
             if (titleScreenVars.counter == 0) {
 
@@ -240,11 +239,7 @@ void Game::title() {
 
         case TitleMode::Scenario:
 
-            #ifdef NEW_GRAPHICS
-                PD::drawBitmap(3, 20, Images::Scenario_New);
-            #else
-                PD::drawBitmap(3, 20, Images::Scenario);
-            #endif
+            PD::drawBitmap(3, 20, Images::Scenario);
 
             if (titleScreenVars.index < textLengths[titleScreenVars.panel] && PC::frameCount % 6 == 0) {
                 
@@ -263,12 +258,7 @@ void Game::title() {
             titleScreenVars.panel = 3;
             titleScreenVars.counter--;
 
-            #ifdef NEW_GRAPHICS
-                PD::drawBitmap(3, 20 - (88 - titleScreenVars.counter), Images::Scenario_New);
-            #else
-                PD::drawBitmap(3, 20 - (88 - titleScreenVars.counter), Images::Scenario);
-            #endif
-
+            PD::drawBitmap(3, 20 - (88 - titleScreenVars.counter), Images::Scenario);
             introText(20 - (88 - titleScreenVars.counter));
 
             if (titleScreenVars.counter == 0) {

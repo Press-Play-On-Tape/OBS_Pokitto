@@ -11,7 +11,9 @@ namespace Images {
     #include "game/ShipParticle_00.h"
     #include "game/ShipParticle_01.h"
     #include "game/Shield.h"
+
     #include "game/Bullet.h"
+    #include "game/BossBullet.h"
 
     #include "puffs/Puff_00.h"
     #include "puffs/Puff_01.h"
@@ -24,6 +26,9 @@ namespace Images {
     #include "puffs/Hit_00.h"
     #include "puffs/Hit_01.h"
     #include "puffs/Hit_02.h"
+    #include "puffs/Hit_03.h"
+    #include "puffs/Hit_04.h"
+    #include "puffs/Hit_05.h"
 
     #include "puffs/Muzzle_00.h"
     #include "puffs/Muzzle_01.h"
@@ -53,6 +58,9 @@ namespace Images {
         Hit_00,
         Hit_01,
         Hit_02,
+        Hit_03,
+        Hit_04,
+        Hit_05,
     };
 
     const uint8_t * const Muzzle[] = { 

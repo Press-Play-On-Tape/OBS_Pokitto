@@ -6,11 +6,16 @@ namespace Constants {
 
     constexpr uint8_t StarField_Size = 10;
     constexpr uint8_t SmallAsteroid_Size = 5;
+    constexpr int8_t SmallAsteroid_OffScreen = -9;
     constexpr uint8_t LargeAsteroid_Size = 4;
+    constexpr int8_t LargeAsteroid_OffScreen = -19;
     constexpr uint8_t Enemy_Size = 4;
+    constexpr int8_t Enemy_OffScreen = -12;
     constexpr uint8_t Health_Factor = 8;
     constexpr uint8_t ScoreDistance = 96;
     constexpr uint8_t Bullet_Count = 2;
+    constexpr uint8_t Boss_Bullet_Count = 6;
+    constexpr uint8_t Boss_Bullet_Random = 16;
     constexpr uint8_t Bullet_None = 255;
 
     constexpr uint8_t Enemy_Path_Large[] = { 26, 24, 22, 20, 18, 16, 14, 12, 10, 9, 8, 7, 6, 5, 4, 4, 3, 3, 2, 2, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 42, 44, 45, 46, 47, 48, 49, 50, 50, 51, 51, 52, 52, 52, 52, 52, 52, 51, 51, 50, 50, 49, 49, 48, 47, 45, 44, 42, 41, 40, 38, 37, 35, 34, 32, 30, 28, };
@@ -26,6 +31,11 @@ enum class GameState : uint8_t {
     Title,
     Game_Init,
     Game,
+    Game_EnemyLeaving,
+    Game_AsteroidLeaving,
+    Game_BossEntering,
+    Game_Boss,
+    Game_BossLeaving,
     Score,
     GameOver_Init,
     GameOver,

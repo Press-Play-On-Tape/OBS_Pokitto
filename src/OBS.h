@@ -24,6 +24,8 @@ class Game {
         Enemy enemies[Constants::Enemy_Size];
         Player player;
         Bullets bullets;
+        BossBullets bossBullets;
+        Boss boss;
 
         File mainThemeFile;
 
@@ -53,9 +55,12 @@ class Game {
         void moveRenderStarfield();
         void moveRenderSmallAsteroids(bool alternate);
         void moveRenderLargeAsteroids(bool alternate);
+        void moveBoss();
+        void moveEnemies();
         void introText(int8_t y);
         void launchEnemy(Enemy &enemy);
         void checkBulletCollision(Bullet &bullet);
+        void checkBossBulletCollision(Bullet &bullet);
 
         void playTheme(Theme theme);
         void muteTheme();

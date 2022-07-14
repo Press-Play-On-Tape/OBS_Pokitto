@@ -44,8 +44,7 @@ void Game::loop() {
             game();
             break;
 
-        case GameState::Game:
-        case GameState::Score:
+        case GameState::Game ... GameState::Score:
 
             game();
             break;

@@ -2,7 +2,6 @@
 
 #define SOUNDS
 #define COOKIE_INITIALISED 39
-#define NEW_GRAPHICS
 
 enum class SoundEffects : uint8_t {
     Both,
@@ -19,6 +18,9 @@ enum class Direction : int8_t {
 	Up = -1,
 	None = 0,
 	Down = 1,
+    UpLeft,
+    Left,
+    DownLeft,
 };
      
 enum class Motion : uint8_t {
@@ -36,6 +38,7 @@ enum class HitObject : int8_t {
     None,
 	LargeAsteroid,
 	Enemy,
+    Player
 };
 
 enum class TitleMode : int8_t {

@@ -58,6 +58,7 @@ struct GameScreenVars {
 struct Asteroid : public Point {
 
     uint8_t type = 0;
+    bool active = false;
     
 };
 
@@ -65,6 +66,8 @@ struct Bullet : public Point {
 
     uint8_t hitCount = 0;
     uint8_t muzzleIndex = 0;
+    bool active = true;
+    Direction direction = Direction::Down;
     
     HitObject hitObject = HitObject::None;
     
@@ -72,6 +75,7 @@ struct Bullet : public Point {
         this->x = -1;
         this->hitCount = 0;
         this->hitObject = HitObject::None;
+        this->active = false;
     }
 
 };
@@ -96,7 +100,7 @@ struct Bullets {
 
             Bullet &bullet = this->bullets[i];
 
-            if (bullet.x == -1) {
+            if (!bullet.active) {
 
                 return i;
 
@@ -105,6 +109,41 @@ struct Bullets {
         }
 
         return Constants::Bullet_None;
+    }
+
+};
+
+
+struct BossBullets {
+
+    Bullet bullets[Constants::Boss_Bullet_Count];
+    
+    void reset() {
+
+        for (Bullet &bullet : this->bullets) {
+
+            bullet.reset();
+
+        }
+
+    }
+
+    uint8_t getInactiveBullet() {
+
+        for (uint8_t i = 0; i < Constants::Boss_Bullet_Count; i++) {
+
+            Bullet &bullet = this->bullets[i];
+
+            if (!bullet.active) {
+
+                return i;
+
+            }
+
+        }
+
+        return Constants::Bullet_None;
+
     }
 
 };
@@ -118,6 +157,45 @@ struct Enemy : public Point {
     uint8_t pathCount = 0; 
     uint8_t yOffset = 0;         
     uint8_t explodeCounter = 0;
+        
+    bool updateExplosion() {
+
+        if (this->explodeCounter > 0) {
+
+            this->explodeCounter--;
+
+            if (this->explodeCounter == 0) {
+
+                this->explodeCounter = 0;
+                return true;
+
+            }
+
+        }
+
+        return false;
+
+    }
+
+    bool getActive() {
+
+        return this->active;
+
+    }
+
+};
+
+struct Boss : public Point {
+
+    bool active = false;
+    uint8_t y = 0;         
+    uint8_t x = 0;         
+    uint8_t pathCounter = 0;         
+    uint8_t explodeCounter = 0;
+
+    uint8_t topHealth = 3;
+    uint8_t bottomHealth = 3;
+    bool fireFromTop = false;
         
     bool updateExplosion() {
 
