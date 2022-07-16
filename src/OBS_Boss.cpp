@@ -17,12 +17,11 @@ void Game::moveBoss() {
 
             case GameState::Game_BossEntering:
 
-                boss.x--;
-                boss.pathCounter++;
-                if (boss.pathCounter == 70) boss.pathCounter = 0;
-                boss.y = 10 + Constants::Enemy_Path_Large[boss.pathCounter];
+                this->boss.setX(this->boss.getX() - 1);
+                this->boss.incPathCounter();
+                this->boss.setY(10 + Constants::Enemy_Path_Large[this->boss.getPathCounter()]);
 
-                if (boss.x == 82) {
+                if (this->boss.getX() == 82) {
                     this->gameState = GameState::Game_Boss;
                 }
 
@@ -30,10 +29,17 @@ void Game::moveBoss() {
 
             case GameState::Game_Boss:
 
-                boss.pathCounter++;
-                if (boss.pathCounter == 70) boss.pathCounter = 0;
-                boss.y = 10 + Constants::Enemy_Path_Medium[boss.pathCounter];
+                this->boss.incPathCounter();
+                this->boss.setY(10 + Constants::Enemy_Path_Medium[this->boss.getPathCounter()]);
 
+                break;
+
+            case GameState::Game_BossLeaving:
+
+                this->boss.setX(this->boss.getX() + 1);
+                this->boss.incPathCounter();
+                this->boss.setY(10 + Constants::Enemy_Path_Medium[this->boss.getPathCounter()]);
+                
                 break;
 
         }
@@ -49,7 +55,7 @@ void Game::moveBoss() {
         case GameState::Game_Boss:
             {
 
-                if ((boss.topHealth > 0 || boss.bottomHealth > 0) && (random(0, Constants::Boss_Bullet_Random) == 0)) {
+                if ((this->boss.getTopHealth() > 0 || this->boss.getBottomHealth() > 0) && (random(0, Constants::Boss_Bullet_Random) == 0)) {
 
                     uint8_t bulletIdx = bossBullets.getInactiveBullet();
 
@@ -57,10 +63,10 @@ void Game::moveBoss() {
     // printf("fired bullet ");
                         Bullet &bullet = bossBullets.bullets[bulletIdx];
 
-                        bullet.y = boss.y + (boss.topHealth > 0 && boss.bottomHealth > 0 ? (bulletIdx % 2 == 0 ? 8 : 31) : boss.topHealth > 0 ? 8 : 31);
-                        bullet.x = 82;
-                        bullet.direction = static_cast<Direction>(random(static_cast<uint8_t>(Direction::UpLeft), static_cast<uint8_t>(Direction::DownLeft) + 1));
-                        bullet.active = true;
+                        bullet.setY(this->boss.getY() + (this->boss.getTopHealth() > 0 && this->boss.getBottomHealth() > 0 ? (bulletIdx % 2 == 0 ? 9 : 32) : this->boss.getTopHealth() > 0 ? 9 : 32));
+                        bullet.setX(82);
+                        bullet.setDirection(static_cast<Direction>(random(static_cast<uint8_t>(Direction::UpLeft), static_cast<uint8_t>(Direction::DownLeft) + 1)));
+                        bullet.setActive(true);
 
     // printf(", driection %i -- %i\n", (uint8_t)bullet.direction, static_cast<uint8_t>(Direction::UpLeft) );
 
@@ -85,17 +91,17 @@ void Game::checkBossBulletCollision(Bullet &bullet) {
 
     // Has the bullet hit a large asteroid?
 
-    Rect bulletRect = { bullet.x + 1, bullet.y + 1, 7, 5 };
+    Rect bulletRect = bullet.getRect(BulletType::BossBullet);
 
     for (Asteroid &largeAsteroid : largeAsteroids) {
 
-        Rect asteroidRect = { largeAsteroid.x + 1, largeAsteroid.y + 1, 17, 17 };
+        Rect asteroidRect = largeAsteroid.getLargeAsteroidRect();
 
         if (collide(bulletRect, asteroidRect)) {
-            bullet.hitObject = HitObject::LargeAsteroid;
-            bullet.hitCount = 1;
-            bullet.muzzleIndex = 0;
-            bullet.x = largeAsteroid.x + 17;
+            bullet.setHitObject(HitObject::LargeAsteroid);
+            bullet.setHitCount(1);
+            bullet.setMuzzleIndex(0);
+            bullet.setX(largeAsteroid.getX() + 17);
         }
 
     }
@@ -103,26 +109,26 @@ void Game::checkBossBulletCollision(Bullet &bullet) {
 
     // Has the bullet hit the player?
 
-    Rect playerRect = { 10, player.y + 1, 12, 8 };
+    Rect playerRect = player.getRect();
 
     if (collide(bulletRect, playerRect)) {
 
-        bullet.hitObject = HitObject::Player;
-        bullet.hitCount = 1;
-        bullet.muzzleIndex = 0;
-        bullet.x = 22;
+        bullet.setHitObject(HitObject::Player);
+        bullet.setHitCount(1);
+        bullet.setMuzzleIndex(0);
+        bullet.setX(22);
 
-        if (player.health > 0)  {
+        if (player.getHealth() > 0)  {
 
-            player.health--;
+            player.decHealth(1);
 
             #ifdef SOUNDS
                 playSoundEffect(SoundEffect::Mini_Explosion);
             #endif
         
-            if (player.health == 0) {
+            if (player.getHealth() == 0) {
 
-                player.explodeCounter = 21;
+                player.setExplodeCounter(21);
 
                 #ifdef SOUNDS
 //                                        tunes.playScore(Sounds::PlayerDies);

@@ -12,9 +12,9 @@ void Game::game_Init() {
 
     for (Asteroid &smallAsteroid : smallAsteroids) {
 
-        smallAsteroid.x = random(110, 256);
-        smallAsteroid.y = random(0, 80);
-        smallAsteroid.active = true;
+        smallAsteroid.setX(random(110, 256));
+        smallAsteroid.setY(random(0, 80));
+        smallAsteroid.setActive(true);
         
     }
 
@@ -56,9 +56,10 @@ void Game::game() {
 
                     for (Enemy &enemy : this->enemies) {
 
-                        if (enemy.x > 110) {
+                        if (enemy.getX() > 110) {
 
-                            enemy.active = false;
+                            enemy.setActive(false);
+                            enemy.setX(Constants::Enemy_OffScreen);
 
                         }
                         
@@ -66,13 +67,15 @@ void Game::game() {
 
                     for (Asteroid &largeAsteroid : largeAsteroids) {
 
-                        if (largeAsteroid.x > 110) {
+                        if (largeAsteroid.getX() > 110) {
 
-                            largeAsteroid.active = false;
+                            largeAsteroid.setActive(false);
                                 
                         }
                         
                     }
+
+                    this->boss.reset();
 
                 }
 
@@ -81,18 +84,18 @@ void Game::game() {
 
                 if (PC::frameCount % Constants::ScoreDistance == 0) {
 
-                    player.score++;
+                    this->gameScreenVars.score++;
 
                 }
 
-                player.y = player.y + static_cast<int8_t>(player.direction);
+                player.setY(player.getY() + static_cast<int8_t>(player.getDirection()));
 
-                if (player.direction == Direction::Up && player.y == 0) {
-                    player.direction = Direction::None;
+                if (player.getDirection() == Direction::Up && player.getY() == 0) {
+                    player.setDirection(Direction::None);
                 }
 
-                if (player.direction == Direction::Down && player.y == 78) {
-                    player.direction = Direction::None;
+                if (player.getDirection() == Direction::Down && player.getY() == 78) {
+                    player.setDirection(Direction::None);
                 }
 
                 if (PC::buttons.pressed(BTN_A) || PC::buttons.pressed(BTN_B) || PC::buttons.pressed(BTN_LEFT) || PC::buttons.pressed(BTN_RIGHT) || PC::buttons.pressed(BTN_UP) || PC::buttons.pressed(BTN_DOWN)) {
@@ -102,36 +105,36 @@ void Game::game() {
                     if (bulletIdx != Constants::Bullet_None) {
 
                         Bullet &bullet = bullets.bullets[bulletIdx];
-                        bullet.active = true;
+                        bullet.setActive(true);
 
-                        switch (player.direction) {
+                        switch (player.getDirection()) {
 
                             case Direction::Up:
-                                player.direction = Direction::Down;
+                                player.setDirection(Direction::Down);
                                 break;
 
                             case Direction::Down:
-                                player.direction = Direction::Up;
+                                player.setDirection(Direction::Up);
                                 break;
 
                             default:
 
-                                switch (player.y) {
+                                switch (player.getY()) {
 
                                     case 0:
-                                        player.direction = Direction::Down;
+                                        player.setDirection(Direction::Down);
                                         break;
 
                                     case 78:
-                                        player.direction = Direction::Up;
+                                        player.setDirection(Direction::Up);
                                         break;
 
                                     default:
                                         if (random(0,2) == 0) {
-                                            player.direction = Direction::Up;
+                                            player.setDirection(Direction::Up);
                                         }
                                         else {
-                                            player.direction = Direction::Down;
+                                            player.setDirection(Direction::Down);
                                         }
                                         break;
 
@@ -141,14 +144,14 @@ void Game::game() {
                                 
                         }
 
-                        bullet.x = 24;
-                        bullet.y = player.y + 2;
-                        bullet.muzzleIndex = 8;
+                        bullet.setX(24);
+                        bullet.setY(player.getY() + 2);
+                        bullet.setMuzzleIndex(8);
+                        bullet.setHitObject(HitObject::None);
 
                         #ifdef SOUNDS
                             playSoundEffect(SoundEffect::Laser);
                         #endif
-                        bullet.hitObject = HitObject::None;
 
                     }
 
@@ -159,42 +162,42 @@ void Game::game() {
 
                 for (Bullet &bullet : bullets.bullets) {
                         
-                    if (bullet.hitCount > 0) {
+                    if (bullet.getHitCount() > 0) {
 
-                        bullet.hitCount++;
+                        bullet.incHitCount();
 
-                        if (bullet.hitCount > 3) {
+                        if (bullet.getHitCount() > 3) {
                             bullet.reset();
                         }
 
                     }
 
-                    if (bullet.x > 0 && bullet.hitCount == 0) {
+                    if (bullet.getX() > 0 && bullet.getHitCount() == 0) {
 
-                        if (bullet.muzzleIndex > 0) {
+                        if (bullet.getMuzzleIndex() > 0) {
 
-                            bullet.muzzleIndex--;
+                            bullet.decMuzzleIndex();
 
                         }
                         else {
 
-                            bullet.x = bullet.x + 4;
+                            bullet.setX(bullet.getX() + 4);
 
-                            if (bullet.x >= 110) {
+                            if (bullet.getX() >= 110) {
 
-                                bullet.active = false;
+                                bullet.setActive(false);
 
                             }
 
                         }
 
-                        if (bullet.active) checkBulletCollision(bullet);
+                        if (bullet.getActive()) checkBulletCollision(bullet);
 
                     }
 
-                    if (bullet.hitObject == HitObject::LargeAsteroid) {
+                    if (bullet.getHitObject() == HitObject::LargeAsteroid) {
 
-                        bullet.x--;
+                        bullet.setX(bullet.getX() - 1);
 
                     }
 
@@ -206,47 +209,47 @@ void Game::game() {
                 for (Bullet &bullet : bossBullets.bullets) {
 // printf("%i,%i(%i) ",bullet.x,bullet.y, bullet.active);             
 
-                    if (bullet.active) {
+                    if (bullet.getActive()) {
                             
-                        if (bullet.hitCount > 0) {
+                        if (bullet.getHitCount() > 0) {
 
-                            bullet.hitCount++;
+                            bullet.incHitCount();
 
-                            if (bullet.hitCount > 3) {
+                            if (bullet.getHitCount() > 3) {
                                 bullet.reset();
                             }
 
                         }
 
-                        if (bullet.x > -4 && bullet.hitCount == 0) {
+                        if (bullet.getX() > -4 && bullet.getHitCount() == 0) {
 
-                            switch (bullet.direction) {
+                            switch (bullet.getDirection()) {
 
                                 case Direction::UpLeft:
-                                    bullet.x = bullet.x - 2;
-                                    bullet.y = bullet.y - 1;
+                                    bullet.setX(bullet.getX() - 2);
+                                    bullet.setY(bullet.getY() - 1);
                                     break;
 
                                 case Direction::Left:
-                                    bullet.x = bullet.x - 2;
+                                    bullet.setX(bullet.getX() - 2);
                                     break;
 
                                 case Direction::DownLeft:
-                                    bullet.x = bullet.x - 2;
-                                    bullet.y = bullet.y + 1;
+                                    bullet.setX(bullet.getX() - 2);
+                                    bullet.setY(bullet.getY() + 1);
                                     break;
 
                             }
 
-                            if (bullet.x <= -4 || bullet.y < -6 || bullet.y > 88) {
+                            if (bullet.getX() <= -4 || bullet.getY() < -6 || bullet.getY() > 88) {
 
-                                bullet.active = false;
+                                bullet.setActive(false);
 
                             }
 
                         }
 
-                        if (bullet.active) checkBossBulletCollision(bullet);
+                        if (bullet.getActive()) checkBossBulletCollision(bullet);
 
                     }
 
@@ -258,23 +261,23 @@ void Game::game() {
                 // Has the player hit a asteroid?
 
                 bool collision = false;
-                Rect playerRect = { 10, player.y + 1, 12, 8 };
+                Rect playerRect = player.getRect();
 
                 for (Asteroid &largeAsteroid : largeAsteroids) {
 
-                    if (largeAsteroid.active) {
+                    if (largeAsteroid.getActive()) {
                             
-                        Rect asteroidRect = { largeAsteroid.x + 1, largeAsteroid.y + 1, 17, 17 };
+                        Rect asteroidRect = largeAsteroid.getLargeAsteroidRect();
 
                         if (collide(playerRect, asteroidRect)) {
 
-                            if (player.health > 0)  {
+                            if (player.getHealth() > 0)  {
 
-                                player.health--;
+                                player.decHealth(1);
 
-                                if (player.health > 0)  {
+                                if (player.getHealth() > 0)  {
 
-                                    player.health--;
+                                    player.decHealth(1);
 
                                 }
 
@@ -282,9 +285,9 @@ void Game::game() {
                                     playSoundEffect(SoundEffect::Player_Hit);
                                 #endif                            
                                 
-                                if (player.health == 0) {
+                                if (player.getHealth() == 0) {
 
-                                    player.explodeCounter = 21;
+                                    player.setExplodeCounter(21);
 
                                     #ifdef SOUNDS
                                         playSoundEffect(SoundEffect::Mini_Explosion);
@@ -325,20 +328,20 @@ void Game::game() {
 
                     for (Enemy &enemy : enemies) {
 
-                        Rect enemyRect = { enemy.x + 1, enemy.y + 1, 10, 11 };
+                        Rect enemyRect = enemy.getRect();
 
                         if (collide(playerRect, enemyRect)) {
 
-                            if (player.health > 0)  {
+                            if (player.getHealth() > 0)  {
 
-                                player.health--;
+                                player.decHealth(1);
 
                                 #ifdef SOUNDS
                                     playSoundEffect(SoundEffect::Mini_Explosion);
                                 #endif
                             
-                                if (player.health == 0) {
-                                    player.explodeCounter = 21;
+                                if (player.getHealth() == 0) {
+                                    player.setExplodeCounter(21);
 
                                     #ifdef SOUNDS
 //                                        tunes.playScore(Sounds::PlayerDies);
@@ -418,7 +421,7 @@ void Game::game() {
                     case 61:
                         gameScreenVars.clearScores = 0;
                         gameScreenVars.scoreIndex = 255;
-                        player.score = 0;
+                        this->gameScreenVars.score = 0;
                         //arduboy.setRGBled(0, 0, 0);
                         cookie->reset();
 
@@ -459,7 +462,7 @@ void Game::game() {
     moveBoss();
     moveEnemies();
 
-
+printf("%i\n", this->gameState);
     switch (gameState) {
 
         case GameState::Game ... GameState::Game_BossLeaving:
@@ -467,16 +470,16 @@ void Game::game() {
 
                 // Render player ..
 
-                if (player.health > 0 || player.explodeCounter > 16) {
+                if (player.getHealth() > 0 || player.getExplodeCounter() > 16) {
 
-                    PD::drawBitmap(9 + gameScreenVars.xOffset, player.y + gameScreenVars.yOffset, Images::PlayerShip);
-                    PD::drawBitmap(gameScreenVars.xOffset, player.y + 3 + gameScreenVars.yOffset, Images::ShipParticle[PC::frameCount % 8 < 4]);
+                    PD::drawBitmap(9 + gameScreenVars.xOffset, player.getY() + gameScreenVars.yOffset, Images::PlayerShip);
+                    PD::drawBitmap(gameScreenVars.xOffset, player.getY() + 3 + gameScreenVars.yOffset, Images::ShipParticle[PC::frameCount % 8 < 4]);
 
                 }
                 
-                if (player.explodeCounter > 0) {
+                if (player.getExplodeCounter() > 0) {
 
-                    PD::drawBitmap(6, player.y + gameScreenVars.yOffset, Images::Puffs[(21 - player.explodeCounter) / 3]);
+                    PD::drawBitmap(6, player.getY() + gameScreenVars.yOffset, Images::Puffs[(21 - player.getExplodeCounter()) / 3]);
 
                 }
                 
@@ -484,7 +487,7 @@ void Game::game() {
                 
                     gameState = GameState::Score;
                     gameScreenVars.highScoreCounter = 64;
-                    gameScreenVars.scoreIndex = cookie->saveScore(player.score);
+                    gameScreenVars.scoreIndex = cookie->saveScore(this->gameScreenVars.score);
 
                 }
 
@@ -493,23 +496,23 @@ void Game::game() {
                 
                 for (Bullet &bullet : bullets.bullets) {
                                             
-                    if (bullet.x > 0) {
+                    if (bullet.getX() > 0) {
                             
-                        if (bullet.muzzleIndex > 1) {
+                        if (bullet.getMuzzleIndex() > 1) {
 
-                            PD::drawBitmap(bullet.x + gameScreenVars.xOffset, bullet.y + gameScreenVars.yOffset, Images::Muzzle[3 - (bullet.muzzleIndex / 2)]);
+                            PD::drawBitmap(bullet.getX() + gameScreenVars.xOffset, bullet.getY() + gameScreenVars.yOffset, Images::Muzzle[3 - (bullet.getMuzzleIndex() / 2)]);
 
                         }
                         else {
 
-                            switch (bullet.hitCount) {
+                            switch (bullet.getHitCount()) {
 
                                 case 0:
-                                    PD::drawBitmap(bullet.x + gameScreenVars.xOffset, bullet.y + gameScreenVars.yOffset, Images::Bullet);
+                                    PD::drawBitmap(bullet.getX() + gameScreenVars.xOffset, bullet.getY() + gameScreenVars.yOffset, Images::Bullet);
                                     break;
 
                                 default:
-                                    PD::drawBitmap(bullet.x + gameScreenVars.xOffset, bullet.y - 5 + gameScreenVars.yOffset, Images::Hit[bullet.hitCount - 1]);
+                                    PD::drawBitmap(bullet.getX() + gameScreenVars.xOffset, bullet.getY() - 5 + gameScreenVars.yOffset, Images::Hit[bullet.getHitCount() - 1]);
                                     break;
 
                             }
@@ -521,39 +524,20 @@ void Game::game() {
                 }
 
 
-//                 // Render Boss ..
-
-//                 switch (this->gameState) {
-
-//                     case GameState::Game_BossEntering ... GameState::Game_BossLeaving:
-
-//                         PD::drawBitmap(this->boss.x, this->boss.y, Images::Bosses[0]);
-// PD::drawRect(boss.x - 1, boss.y + 6, 4, 5 );
-// PD::drawRect(boss.x - 1, boss.y + 29, 4, 5 );
-// PD::drawRect(boss.x + 5, boss.y + 1, 16, 39 );
-//                         break;
-
-
-//                     default:
-//                         break;
-
-//                 }
-
-
                 // Render boss bullets ..
                 
                 for (Bullet &bullet : bossBullets.bullets) {
                                             
-                    if (bullet.x > 0) {
+                    if (bullet.getX() > 0) {
 
-                        switch (bullet.hitCount) {
+                        switch (bullet.getHitCount()) {
 
                             case 0:
-                                PD::drawBitmap(bullet.x + gameScreenVars.xOffset, bullet.y + gameScreenVars.yOffset, Images::BossBullet);
+                                PD::drawBitmap(bullet.getX() + gameScreenVars.xOffset, bullet.getY() + gameScreenVars.yOffset, Images::BossBullet);
                                 break;
 
                             default:
-                                PD::drawBitmap(bullet.x + gameScreenVars.xOffset, bullet.y - 5 + gameScreenVars.yOffset, Images::Hit[bullet.hitCount - 1 + 3]);
+                                PD::drawBitmap(bullet.getX() + gameScreenVars.xOffset, bullet.getY() - 5 + gameScreenVars.yOffset, Images::Hit[bullet.getHitCount() - 1 + 3]);
                                 break;
 
                         }
@@ -569,18 +553,40 @@ void Game::game() {
 
                     case GameState::Game_BossEntering ... GameState::Game_BossLeaving:
 
-                        PD::drawBitmap(this->boss.x, this->boss.y, Images::Bosses[(PC::frameCount % 32) / 8]);
+                        PD::drawBitmap(this->boss.getX(), this->boss.getY(), Images::Bosses[(PC::frameCount % 32) / 8]);
 
-                        for (uint8_t i = 0; i < 3; i++) {
-                            PD::drawBitmap(this->boss.x + (i * 3) + 3, this->boss.y + 7, Images::Boss_Health);
-                            PD::drawBitmap(this->boss.x + (i * 3) + 3, this->boss.y + 30, Images::Boss_Health);
+                        for (uint8_t i = 1; i < 4; i++) {
+
+                            if (this->boss.getTopHealth() >= i) {
+                                PD::drawBitmap(this->boss.getX() - (i * 3) + 12, this->boss.getY() + 7, Images::Boss_Health);
+                            }
+
+                            if (this->boss.getBottomHealth() >= i) {
+                                PD::drawBitmap(this->boss.getX() - (i * 3) + 12, this->boss.getY() + 30, Images::Boss_Health);
+                            }
+
                         }
 
-PD::drawRect(boss.x, boss.y + 7, 4, 3 );
-PD::drawRect(boss.x, boss.y + 30, 4, 3 );
-PD::drawRect(boss.x + 8, boss.y + 1, 18, 38 );
-PD::drawRect(boss.x + 2, boss.y + 4, 16, 9 );
-PD::drawRect(boss.x + 2, boss.y + 27, 16, 9 );
+                        if (this->boss.getExplodeCounter(ExplodeType::TopHand) > 0) {
+
+                            PD::drawBitmap(this->boss.getX() + gameScreenVars.xOffset - 2, this->boss.getY() + gameScreenVars.yOffset + 2, Images::Puffs[(21 - this->boss.getExplodeCounter(ExplodeType::TopHand)) / 3]);
+                            this->boss.decExplodeCounter(ExplodeType::TopHand);
+
+                        }
+
+                        if (this->boss.getExplodeCounter(ExplodeType::BottomHand) > 0) {
+
+                            PD::drawBitmap(this->boss.getX() + gameScreenVars.xOffset - 2, this->boss.getY() + gameScreenVars.yOffset + 25, Images::Puffs[(21 - this->boss.getExplodeCounter(ExplodeType::BottomHand)) / 3]);
+                            this->boss.decExplodeCounter(ExplodeType::BottomHand);
+
+                        }
+
+
+// PD::drawRect(this->boss.x, this->boss.y + 7, 4, 3 );
+// PD::drawRect(this->boss.x, this->boss.y + 30, 4, 3 );
+// PD::drawRect(this->boss.x + 8, this->boss.y + 1, 18, 38 );
+// PD::drawRect(this->boss.x + 2, this->boss.y + 4, 16, 9 );
+// PD::drawRect(this->boss.x + 2, this->boss.y + 27, 16, 9 );
 
                         break;
 
@@ -598,9 +604,9 @@ PD::drawRect(boss.x + 2, boss.y + 27, 16, 9 );
                 PD::fillRect(88, 81, 22, 7);
                 PD::setColor(6);
 
-                uint8_t health_Bar = player.health / Constants::Health_Factor;
+                uint8_t health_Bar = player.getHealth() / Constants::Health_Factor;
                 uint8_t digits[5] = {};
-                extractDigits(digits, player.score);
+                extractDigits(digits, this->gameScreenVars.score);
                 uint8_t location = 106;
 
                 for (uint8_t j = 0; j < 5; ++j, location -= 4) {
@@ -624,8 +630,8 @@ PD::drawRect(boss.x + 2, boss.y + 27, 16, 9 );
                 PD::setCursor(15, 25);
                 PD::print("Your Score  ");
 
-                if (PC::frameCount % 48 < 24 || player.score == 0) {
-                    printScore(88, 25, player.score);
+                if (PC::frameCount % 48 < 24 || this->gameScreenVars.score == 0) {
+                    printScore(88, 25, this->gameScreenVars.score);
                 }
 
                 PD::setCursor(15, 38);
@@ -666,13 +672,15 @@ PD::drawRect(boss.x + 2, boss.y + 27, 16, 9 );
 
             for (Enemy &enemy : this->enemies) {
 
-                if (enemy.x > Constants::Enemy_OffScreen) {
+                if (enemy.getActive()) {
 
                     active = true;
 
                 }
                 
             }
+
+            if (PC::frameCount % 64 <= 32) { PD::drawBitmap(23, 37, Images::BossWarning); }
 
             if (!active) { this->gameState = GameState::Game_AsteroidLeaving; }
 
@@ -682,16 +690,20 @@ PD::drawRect(boss.x + 2, boss.y + 27, 16, 9 );
 
             for (Asteroid &largeAsteroid : largeAsteroids) {
 
-                if (largeAsteroid.active) {
+                if (largeAsteroid.getActive()) {
 
-                    switch (largeAsteroid.x) {
+                    switch (largeAsteroid.getX()) {
 
-                        case Constants::LargeAsteroid_OffScreen + 1 ... 60:
+                        case Constants::LargeAsteroid_OffScreen + 1 ... 19:
+                            break;
+
+                        case 20 ... 109:
                             active = true;
                             break;
 
                         case 110 ... 1000:
-                            largeAsteroid.active = false;
+                            largeAsteroid.setActive(false);
+                            largeAsteroid.setX(Constants::LargeAsteroid_OffScreen);
                             break;
                             
                     }
@@ -703,11 +715,30 @@ PD::drawRect(boss.x + 2, boss.y + 27, 16, 9 );
             if (!active) { 
 
                 this->gameState = GameState::Game_BossEntering; 
-                this->boss.active = true;
-                this->boss.pathCounter = random(0, 20);
-                this->boss.x = 110;
-                this->boss.y = 10 + Constants::Enemy_Path_Large[boss.pathCounter];
+                this->boss.setActive(true);
+                this->boss.setPathCounter(random(0, 20));
+                this->boss.setX(110);
+                this->boss.setY(10 + Constants::Enemy_Path_Large[this->boss.getPathCounter()]);
                 
+            }
+
+            if (PC::frameCount % 64 <= 32) { PD::drawBitmap(23, 37, Images::BossWarning); }
+
+            break;
+
+        case GameState::Game_BossEntering:
+
+            if (this->boss.getActive() > 90 && PC::frameCount % 64 <= 32) { PD::drawBitmap(23, 37, Images::BossWarning); }
+
+            break;
+
+        case GameState::Game_BossLeaving:
+
+            if (this->boss.getX() == 110) {
+
+                this->gameState = GameState::Game;
+                this->boss.setActive(false);
+
             }
 
             break;

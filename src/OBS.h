@@ -7,6 +7,7 @@
 #include "utils/Constants.h"
 #include "utils/Enums.h"
 #include "utils/Structs.h"
+#include "entities/Entities.h"
 #include "utils/GameCookie.h"
 
 using PC=Pokitto::Core;

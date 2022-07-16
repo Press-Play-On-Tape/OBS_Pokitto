@@ -37,15 +37,12 @@ void Game::loop() {
             title();
             break;
 
-
         case GameState::Game_Init:
-
             game_Init();
             game();
             break;
 
         case GameState::Game ... GameState::Score:
-
             game();
             break;
             

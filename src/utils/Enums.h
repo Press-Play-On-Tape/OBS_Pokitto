@@ -38,7 +38,8 @@ enum class HitObject : int8_t {
     None,
 	LargeAsteroid,
 	Enemy,
-    Player
+    Player,
+    Boss
 };
 
 enum class TitleMode : int8_t {

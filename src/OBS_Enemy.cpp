@@ -13,111 +13,104 @@ void Game::moveEnemies() {
 
     for (Enemy &enemy : enemies) {
 
-        switch (enemy.motion) {
+        if (enemy.getActive()) {
 
-            case Motion::Slow:
+            switch (enemy.getMotion()) {
 
-                if (PC::frameCount % 2 == 0) {
+                case Motion::Slow:
 
-                    switch (enemy.path) {
+                    if (PC::frameCount % 2 == 0) {
 
-                        case Path::Small:
+                        switch (enemy.getPath()) {
 
-                            enemy.pathCount++;
-                            if (enemy.pathCount == 36) enemy.pathCount = 0;
+                            case Path::Small:
 
-                            enemy.x--;                    
-                            enemy.y = Constants::Enemy_Path_Small[enemy.pathCount];
-                            break;
+                                enemy.incPathCount(36);
+                                enemy.decX();                    
+                                enemy.setY(Constants::Enemy_Path_Small[enemy.getPathCount()] + enemy.getYOffset());
+                                break;
 
-                        case Path::Medium:
+                            case Path::Medium:
 
-                            enemy.pathCount++;
-                            if (enemy.pathCount == 70) enemy.pathCount = 0;
+                                enemy.incPathCount(70);
+                                enemy.decX();                    
+                                enemy.setY(Constants::Enemy_Path_Medium[enemy.getPathCount()] + enemy.getYOffset());
+                                break;
 
-                            enemy.x--;                    
-                            enemy.y = Constants::Enemy_Path_Medium[enemy.pathCount];
-                            break;
+                            case Path::Large:
 
-                        case Path::Large:
+                                enemy.incPathCount(91);
+                                enemy.decX();                   
+                                enemy.setY(Constants::Enemy_Path_Large[enemy.getPathCount()] + enemy.getYOffset());
+                                break;
 
-                            enemy.pathCount++;
-                            if (enemy.pathCount == 91) enemy.pathCount = 0;
+                            default:
+                                break;
 
-                            enemy.x--;                    
-                            enemy.y = Constants::Enemy_Path_Large[enemy.pathCount] + enemy.yOffset;
-                            break;
-
-                        default:
-                            break;
+                        }
 
                     }
 
-                }
-
-                break;
+                    break;
 
 
-            case Motion::Fast:
+                case Motion::Fast:
 
-                if (PC::frameCount % 3 < 2) {
+                    if (PC::frameCount % 3 < 2) {
 
-                    switch (enemy.path) {
+                        switch (enemy.getPath()) {
 
-                        case Path::Small:
+                            case Path::Small:
 
-                            enemy.pathCount++;
-                            if (enemy.pathCount == 36) enemy.pathCount = 0;
+                                enemy.incPathCount(36);
+                                enemy.decX();                    
+                                enemy.setY(Constants::Enemy_Path_Small[enemy.getPathCount()] + enemy.getYOffset());
+                                break;
 
-                            enemy.x--;                    
-                            enemy.y = Constants::Enemy_Path_Small[enemy.pathCount] + enemy.yOffset;
-                            break;
+                            case Path::Medium:
 
-                        case Path::Medium:
+                                enemy.incPathCount(70);
+                                enemy.decX();                    
+                                enemy.setY(Constants::Enemy_Path_Medium[enemy.getPathCount()] + enemy.getYOffset());
+                                break;
 
-                            enemy.pathCount++;
-                            if (enemy.pathCount == 70) enemy.pathCount = 0;
+                            case Path::Large:
 
-                            enemy.x--;                    
-                            enemy.y = Constants::Enemy_Path_Medium[enemy.pathCount] + enemy.yOffset;
-                            break;
+                                enemy.incPathCount(91);
+                                enemy.decX();                    
+                                enemy.setY(Constants::Enemy_Path_Large[enemy.getPathCount()] + enemy.getYOffset());
+                                break;
 
-                        case Path::Large:
+                            default:
+                                break;
 
-                            enemy.pathCount++;
-                            if (enemy.pathCount == 91) enemy.pathCount = 0;
-
-                            enemy.x--;                    
-                            enemy.y = Constants::Enemy_Path_Large[enemy.pathCount];
-                            break;
-
-                        default:
-                            break;
+                        }
 
                     }
 
-                }
+                    break;
 
-                break;
+            }
 
         }
 
 
-        if (enemy.x == Constants::Enemy_OffScreen) {
+        if (enemy.getX() <= Constants::Enemy_OffScreen) {
 
+            enemy.setActive(false);
             launchEnemy(enemy);
 
         }
 
-        if (enemy.getActive() || enemy.explodeCounter > 16) {
+        if (enemy.getActive() || enemy.getExplodeCounter() > 16) {
 
-            PD::drawBitmap(enemy.x + gameScreenVars.xOffset, enemy.y + gameScreenVars.yOffset, Images::Enemy);
+            PD::drawBitmap(enemy.getX() + gameScreenVars.xOffset, enemy.getY() + gameScreenVars.yOffset, Images::Enemy);
 
         }
 
-        if (enemy.explodeCounter > 0) {
+        if (enemy.getExplodeCounter() > 0) {
 
-            PD::drawBitmap(enemy.x +gameScreenVars. xOffset - 3, enemy.y + gameScreenVars.yOffset, Images::Puffs[(21 - enemy.explodeCounter) / 3]);
+            PD::drawBitmap(enemy.getX() +gameScreenVars. xOffset - 3, enemy.getY() + gameScreenVars.yOffset, Images::Puffs[(21 - enemy.getExplodeCounter()) / 3]);
 
         }
         

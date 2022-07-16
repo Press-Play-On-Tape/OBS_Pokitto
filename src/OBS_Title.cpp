@@ -53,9 +53,9 @@ void Game::title_Init() {
 
     for (Asteroid &smallAsteroid : this->smallAsteroids) {
 
-        smallAsteroid.x = random(0, 256);
-        smallAsteroid.y = random(0, 56);
-        smallAsteroid.active = true;
+        smallAsteroid.setX(random(0, 256));
+        smallAsteroid.setY(random(0, 56));
+        smallAsteroid.setActive(true);
         
     }
 
@@ -67,8 +67,8 @@ void Game::title_Init() {
 
     for (Point &star : this->starfield) {
 
-        star.x = random(0, 110);
-        star.y = random(0, 88);
+        star.setX(random(0, 110));
+        star.setY(random(0, 88));
         
     }
 
@@ -176,10 +176,10 @@ void Game::title() {
 
                 Asteroid &smallAsteroid = smallAsteroids[i];
 
-                if (smallAsteroid.active) {
+                if (smallAsteroid.getActive()) {
 
                     if (i % 2 == 1) {
-                        PD::drawBitmap(smallAsteroid.x, smallAsteroid.y, Images::SmallAsteroid);
+                        PD::drawBitmap(smallAsteroid.getX(), smallAsteroid.getY(), Images::SmallAsteroid);
                     }
 
                 }
@@ -190,10 +190,10 @@ void Game::title() {
             
                 Asteroid &largeAsteroid = largeAsteroids[i];
 
-                if (largeAsteroid.active) {
+                if (largeAsteroid.getActive()) {
                                 
                     if (i % 2 == 1) {
-                        PD::drawBitmap(largeAsteroid.x, largeAsteroid.y, Images::BigAsteroid[largeAsteroid.type]);
+                        PD::drawBitmap(largeAsteroid.getX(), largeAsteroid.getY(), Images::BigAsteroid[largeAsteroid.getType()]);
                     }
 
                 }
@@ -273,8 +273,8 @@ void Game::title() {
         case TitleMode::Entrance:
 
             titleScreenVars.counter++;
-            PD::drawBitmap(-16 + titleScreenVars.counter, player.y, Images::PlayerShip);
-            PD::drawBitmap(-25 + titleScreenVars.counter, player.y + 3, Images::ShipParticle[PC::frameCount % 8 < 4]);
+            PD::drawBitmap(-16 + titleScreenVars.counter, player.getY(), Images::PlayerShip);
+            PD::drawBitmap(-25 + titleScreenVars.counter, player.getY() + 3, Images::ShipParticle[PC::frameCount % 8 < 4]);
 
             if (titleScreenVars.counter == 25) {
 

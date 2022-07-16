@@ -34,6 +34,10 @@ namespace Images {
     #include "puffs/Muzzle_01.h"
     #include "puffs/Muzzle_02.h"
 
+    #include "game/BossWarning.h"
+    #include "game/GetHealth.h"
+    #include "game/PowerUp.h"
+
     const uint8_t * const BigAsteroid[] = { 
         BigAsteroid_00,
         BigAsteroid_01,
