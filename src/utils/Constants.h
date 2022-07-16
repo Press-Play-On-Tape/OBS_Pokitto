@@ -24,21 +24,4 @@ namespace Constants {
 
 };
 
-enum class GameState : uint8_t {
-    Splash_Init, // 0
-    Splash,
-    Title_Init,
-    Title,
-    Game_Init,
-    Game,
-    Game_EnemyLeaving,
-    Game_AsteroidLeaving,
-    Game_BossEntering,
-    Game_Boss,
-    Game_BossLeaving,
-    Score,
-    GameOver_Init,
-    GameOver,
-};
-
 

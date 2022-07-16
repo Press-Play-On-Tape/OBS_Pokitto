@@ -3,6 +3,23 @@
 #define SOUNDS
 #define COOKIE_INITIALISED 39
 
+enum class GameState : uint8_t {
+    Splash_Init, // 0
+    Splash,
+    Title_Init,
+    Title,
+    Game_Init,
+    Game,
+    Game_EnemyLeaving,
+    Game_AsteroidLeaving,
+    Game_BossEntering,
+    Game_Boss,
+    Game_BossLeaving,
+    Score,
+    GameOver_Init,
+    GameOver,
+};
+
 enum class SoundEffects : uint8_t {
     Both,
     Music,
@@ -10,8 +27,17 @@ enum class SoundEffects : uint8_t {
     None
 };
 
+enum class SoundEffect : uint8_t {
+    Laser,
+    Mini_Explosion,
+    Player_Hit,
+    Game_Over,
+    KeyPress
+};
+
 enum class Theme : uint8_t {
     Main,
+    Boss
 };
     
 enum class Direction : int8_t {
@@ -76,11 +102,3 @@ inline SoundEffects operator--(SoundEffects &c, int ) {
     --c;
     return result;
 }
-
-enum class SoundEffect : uint8_t {
-    Laser,
-    Mini_Explosion,
-    Player_Hit,
-    Game_Over,
-    KeyPress
-};

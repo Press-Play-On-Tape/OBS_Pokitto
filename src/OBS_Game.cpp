@@ -50,9 +50,12 @@ void Game::game() {
         case GameState::Game ... GameState::Game_BossLeaving:
 
             {
-                if (PC::buttons.pressed(BTN_C) || PC::buttons.repeat(BTN_C, 1)) {
+                // Launch a boss>
+
+                if (gameState == GameState::Game && this->gameScreenVars.score > 0 && (this->gameScreenVars.score % 100 == 0) ||  PC::buttons.pressed(BTN_C) || PC::buttons.repeat(BTN_C, 1)) {
 
                     gameState = GameState::Game_EnemyLeaving;
+                    this->playTheme(Theme::Boss);
 
                     for (Enemy &enemy : this->enemies) {
 
@@ -273,13 +276,7 @@ void Game::game() {
 
                             if (player.getHealth() > 0)  {
 
-                                player.decHealth(1);
-
-                                if (player.getHealth() > 0)  {
-
-                                    player.decHealth(1);
-
-                                }
+                                player.decHealth(2);
 
                                 #ifdef SOUNDS
                                     playSoundEffect(SoundEffect::Player_Hit);
@@ -462,7 +459,7 @@ void Game::game() {
     moveBoss();
     moveEnemies();
 
-printf("%i\n", this->gameState);
+// printf("%i\n", this->gameState);
     switch (gameState) {
 
         case GameState::Game ... GameState::Game_BossLeaving:
@@ -488,6 +485,7 @@ printf("%i\n", this->gameState);
                     gameState = GameState::Score;
                     gameScreenVars.highScoreCounter = 64;
                     gameScreenVars.scoreIndex = cookie->saveScore(this->gameScreenVars.score);
+                    this->muteTheme();
 
                 }
 
@@ -581,6 +579,15 @@ printf("%i\n", this->gameState);
 
                         }
 
+                        if (this->boss.getExplodeCounter(ExplodeType::Body) > 0) {
+
+                            PD::drawBitmap(this->boss.getX() + this->boss.getExplodePoint().getX() + gameScreenVars.xOffset, 
+                                           this->boss.getY() + this->boss.getExplodePoint().getY() - 5 + gameScreenVars.yOffset, 
+                                           Images::Hit[(this->boss.getExplodeCounter(ExplodeType::Body) - 1) / 3]);
+// printf("hit %i %i\n",this->boss.getExplodeCounter(ExplodeType::Body), (this->boss.getExplodeCounter(ExplodeType::Body) - 1) / 3 );
+                            this->boss.decExplodeCounter(ExplodeType::Body);
+                        
+                        }
 
 // PD::drawRect(this->boss.x, this->boss.y + 7, 4, 3 );
 // PD::drawRect(this->boss.x, this->boss.y + 30, 4, 3 );
@@ -737,6 +744,7 @@ printf("%i\n", this->gameState);
             if (this->boss.getX() == 110) {
 
                 this->gameState = GameState::Game;
+                this->muteTheme();
                 this->boss.setActive(false);
 
             }

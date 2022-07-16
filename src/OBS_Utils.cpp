@@ -428,21 +428,29 @@ void Game::checkBulletCollision(Bullet &bullet) {
 
         // Top hand ..
 
-        Rect enemyRect = { this->boss.getX(), this->boss.getY() + 7, 4, 3 };
+        if (this->boss.getTopHealth() > 0 ) {
 
-        if (collide(bulletRect, enemyRect)) {
+            Rect enemyRect = { this->boss.getX(), this->boss.getY() + 7, 4, 3 };
 
-            if (this->boss.getTopHealth() > 0) {
+            if (collide(bulletRect, enemyRect)) {
 
-                this->boss.setTopHealth(this->boss.getTopHealth() - 1);
-                this->boss.setExplodeCounter(ExplodeType::TopHand, 21);
+                if (this->boss.getTopHealth() > 0) {
 
-                bullet.setHitObject(HitObject::Boss);
-                bullet.setHitCount(1);
-                bullet.setMuzzleIndex(0);
-                bullet.setX(-10);
-                bullet.setActive(false);
-                return;
+                    this->boss.setTopHealth(this->boss.getTopHealth() - 1);
+                    this->boss.setExplodeCounter(ExplodeType::TopHand, 21);
+
+                    bullet.setHitObject(HitObject::Boss);
+                    bullet.setMuzzleIndex(0);
+                    bullet.setX(-10);
+                    bullet.setActive(false);
+
+                    #ifdef SOUNDS
+                        playSoundEffect(SoundEffect::Mini_Explosion);
+                    #endif   
+                                    
+                    return;
+
+                }
 
             }
 
@@ -451,21 +459,29 @@ void Game::checkBulletCollision(Bullet &bullet) {
 
         // Lower hand ..
 
-        enemyRect = { this->boss.getX(), this->boss.getY() + 30, 4, 3 };
+        if (this->boss.getBottomHealth() > 0) {
 
-        if (collide(bulletRect, enemyRect)) {
+            Rect enemyRect = { this->boss.getX(), this->boss.getY() + 30, 4, 3 };
 
-            if (this->boss.getBottomHealth() > 0) {
+            if (collide(bulletRect, enemyRect)) {
 
-                this->boss.setBottomHealth(this->boss.getBottomHealth() - 1);
-                this->boss.setExplodeCounter(ExplodeType::BottomHand, 21);
+                if (this->boss.getBottomHealth() > 0) {
 
-                bullet.setHitObject(HitObject::Boss);
-                bullet.setHitCount(1);
-                bullet.setMuzzleIndex(0);
-                bullet.setX(-10);
-                bullet.setActive(false);
-                return;
+                    this->boss.setBottomHealth(this->boss.getBottomHealth() - 1);
+                    this->boss.setExplodeCounter(ExplodeType::BottomHand, 21);
+
+                    bullet.setHitObject(HitObject::Boss);
+                    bullet.setMuzzleIndex(0);
+                    bullet.setX(-10);
+                    bullet.setActive(false);
+                    
+                    #ifdef SOUNDS
+                        playSoundEffect(SoundEffect::Mini_Explosion);
+                    #endif   
+
+                    return;
+
+                }
 
             }
 
@@ -474,15 +490,56 @@ void Game::checkBulletCollision(Bullet &bullet) {
 
         // Upper arm ..
 
-        enemyRect = { this->boss.getX() + 8, this->boss.getY() + 1, 18, 38 };
+        Rect enemyRect = { this->boss.getX() + 2, this->boss.getY() + 4, 16, 9 };
 
         if (collide(bulletRect, enemyRect)) {
 
-            this->boss.setExplodeCounter(ExplodeType::Body, 5);
+            this->boss.setExplodeCounter(ExplodeType::Body, 6);
+            Point &point = this->boss.getExplodePoint();
+
+            point.setX(enemyRect.x - this->boss.getX());
+            point.setY(bullet.getY() - 2 - this->boss.getY());
+            bullet.setX(-10);
+            bullet.setActive(false);
             return;
 
         }
 
+
+        // Lower arm ..
+
+        enemyRect = { this->boss.getX() + 2, this->boss.getY() + 27, 16, 9 };
+
+        if (collide(bulletRect, enemyRect)) {
+
+            this->boss.setExplodeCounter(ExplodeType::Body, 6);
+            Point &point = this->boss.getExplodePoint();
+            point.setX(enemyRect.x - this->boss.getX());
+            point.setY(bullet.getY() - 2 - this->boss.getY());
+            bullet.setX(-10);
+            bullet.setActive(false);
+// printf("Bottom arm\n");   
+            return;
+
+        }
+
+
+        // Body ..
+
+        enemyRect = { this->boss.getX() + 8, this->boss.getY() + 1, 18, 38 };
+
+        if (collide(bulletRect, enemyRect)) {
+
+            this->boss.setExplodeCounter(ExplodeType::Body, 6);
+            Point &point = this->boss.getExplodePoint();
+            point.setX(enemyRect.x - this->boss.getX());
+            point.setY(bullet.getY() - 2 - this->boss.getY());
+            bullet.setX(-10);
+            bullet.setActive(false);
+// printf("Body\n");                
+            return;
+
+        }
 
 // PD::drawRect(this->boss.x, this->boss.y + 7, 4, 3 );
 // PD::drawRect(this->boss.x, this->boss.y + 30, 4, 3 );
@@ -495,6 +552,7 @@ void Game::checkBulletCollision(Bullet &bullet) {
         if (this->boss.getTopHealth() == 0 && this->boss.getBottomHealth() == 0) {
 
             this->gameState = GameState::Game_BossLeaving;
+            this->gameScreenVars.score = this->gameScreenVars.score + 1;
 
         }
 
@@ -508,8 +566,6 @@ void Game::checkBulletCollision(Bullet &bullet) {
                 Rect bossBulletRect = bossBullet.getRect(BulletType::BossBullet);
 
                 if (collide(bulletRect, bossBulletRect)) {
-
-                    this->boss.setExplodeCounter(ExplodeType::Body, 5);
 
                     bullet.setX(-10);
                     bullet.setActive(false);

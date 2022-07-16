@@ -27,14 +27,14 @@ class Boss : public Point {
         uint8_t getExplodeCounter(ExplodeType ex)               { return this->explodeCounter[static_cast<uint8_t>(ex)]; }
         uint8_t getTopHealth()                                  { return this->topHealth; }
         uint8_t getBottomHealth()                               { return this->bottomHealth; }
-        Point getExplodePoint()                                 { return this->explodePoint; }
+        Point &getExplodePoint()                                { return this->explodePoint; }
 
         void setActive(bool val)                                { this->active = val; }
         void setPathCounter(uint8_t val)                        { this->pathCounter = val; }
         void setExplodeCounter(ExplodeType ex, uint8_t val)     { this->explodeCounter[static_cast<uint8_t>(ex)] = val; }
         void setTopHealth(uint8_t val)                          { this->topHealth = val; }
         void setBottomHealth(uint8_t val)                       { this->bottomHealth = val; }
-        void setExplodePoint(Point val)                         { this->explodePoint = val; }
+        void setExplodePoint(Point &val)                        { this->explodePoint = val; }
 
         void reset() {
 

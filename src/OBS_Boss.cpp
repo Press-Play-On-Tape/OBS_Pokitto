@@ -120,7 +120,7 @@ void Game::checkBossBulletCollision(Bullet &bullet) {
 
         if (player.getHealth() > 0)  {
 
-            player.decHealth(1);
+            player.decHealth(3);
 
             #ifdef SOUNDS
                 playSoundEffect(SoundEffect::Mini_Explosion);

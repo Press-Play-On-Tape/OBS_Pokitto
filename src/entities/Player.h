@@ -47,7 +47,12 @@ class Player {
 
         void decHealth(uint8_t i) {
 
-            this->health = this->health - i;
+            if (this->health >= i) {
+                this->health = this->health - i;
+            }
+            else {
+                this->health = 0;
+            }
 
         }
 
