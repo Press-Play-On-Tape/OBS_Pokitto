@@ -63,7 +63,7 @@ void Game::moveBoss() {
     // printf("fired bullet ");
                         Bullet &bullet = bossBullets.bullets[bulletIdx];
 
-                        bullet.setY(this->boss.getY() + (this->boss.getTopHealth() > 0 && this->boss.getBottomHealth() > 0 ? (bulletIdx % 2 == 0 ? 9 : 32) : this->boss.getTopHealth() > 0 ? 9 : 32));
+                        bullet.setY(this->boss.getY() + (this->boss.getTopHealth() > 0 && this->boss.getBottomHealth() > 0 ? (bulletIdx % 2 == 0 ? 8 : 31) : this->boss.getTopHealth() > 0 ? 8 : 31));
                         bullet.setX(82);
                         bullet.setDirection(static_cast<Direction>(random(static_cast<uint8_t>(Direction::UpLeft), static_cast<uint8_t>(Direction::DownLeft) + 1)));
                         bullet.setActive(true);
@@ -95,13 +95,17 @@ void Game::checkBossBulletCollision(Bullet &bullet) {
 
     for (Asteroid &largeAsteroid : largeAsteroids) {
 
-        Rect asteroidRect = largeAsteroid.getLargeAsteroidRect();
+        if (largeAsteroid.getActive()) {
 
-        if (collide(bulletRect, asteroidRect)) {
-            bullet.setHitObject(HitObject::LargeAsteroid);
-            bullet.setHitCount(1);
-            bullet.setMuzzleIndex(0);
-            bullet.setX(largeAsteroid.getX() + 17);
+            Rect asteroidRect = largeAsteroid.getLargeAsteroidRect();
+
+            if (collide(bulletRect, asteroidRect)) {
+                bullet.setHitObject(HitObject::LargeAsteroid);
+                bullet.setHitCount(1);
+                bullet.setMuzzleIndex(0);
+                bullet.setX(largeAsteroid.getX() + 17);
+            }
+
         }
 
     }

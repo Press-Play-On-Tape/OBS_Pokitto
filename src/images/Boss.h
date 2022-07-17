@@ -6,6 +6,7 @@ namespace Images {
     #include "boss/Boss_01.h"
     #include "boss/Boss_02.h"
     #include "boss/Boss_03.h"
+    #include "boss/Boss_04_Red.h"
 
     #include "boss/Boss_Health.h"
 

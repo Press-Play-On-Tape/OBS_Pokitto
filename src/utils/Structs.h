@@ -35,6 +35,7 @@ struct GameScreenVars {
     uint8_t clearScores = 0;
     uint8_t highScoreCounter = 0;
     uint16_t score = 0;
+    uint16_t distance = 0;
 
     void reset() {
 
@@ -44,6 +45,7 @@ struct GameScreenVars {
         this->scoreIndex = 0;
         this->clearScores = 0;
         this->score = 0;
+        this->distance = 0;
         this->highScoreCounter = 0;
 
     }

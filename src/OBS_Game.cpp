@@ -50,9 +50,9 @@ void Game::game() {
         case GameState::Game ... GameState::Game_BossLeaving:
 
             {
-                // Launch a boss>
+                // Launch a boss ?
 
-                if (gameState == GameState::Game && this->gameScreenVars.score > 0 && (this->gameScreenVars.score % 100 == 0) ||  PC::buttons.pressed(BTN_C) || PC::buttons.repeat(BTN_C, 1)) {
+                if (gameState == GameState::Game && this->gameScreenVars.distance > 0 && (this->gameScreenVars.distance % 100 == 0) ||  PC::buttons.pressed(BTN_C) || PC::buttons.repeat(BTN_C, 1)) {
 
                     gameState = GameState::Game_EnemyLeaving;
                     this->playTheme(Theme::Boss);
@@ -88,6 +88,7 @@ void Game::game() {
                 if (PC::frameCount % Constants::ScoreDistance == 0) {
 
                     this->gameScreenVars.score++;
+                    this->gameScreenVars.distance++;
 
                 }
 
@@ -169,8 +170,24 @@ void Game::game() {
 
                         bullet.incHitCount();
 
-                        if (bullet.getHitCount() > 3) {
-                            bullet.reset();
+                        switch (bullet.getHitObject()) {
+
+                            case HitObject::BossBullet:
+
+                                if (bullet.getHitCount() > 7) {
+                                    bullet.reset();
+                                }
+
+                                break;
+
+                            default:
+
+                                if (bullet.getHitCount() > 3) {
+                                    bullet.reset();
+                                }
+
+                                break;
+
                         }
 
                     }
@@ -510,7 +527,20 @@ void Game::game() {
                                     break;
 
                                 default:
-                                    PD::drawBitmap(bullet.getX() + gameScreenVars.xOffset, bullet.getY() - 5 + gameScreenVars.yOffset, Images::Hit[bullet.getHitCount() - 1]);
+
+                                    switch (bullet.getHitObject()) {
+
+                                        case HitObject::BossBullet:
+printf("Hit bossbullet %i %i - %i\n",bullet.getX() + gameScreenVars.xOffset, bullet.getY() - 5 + gameScreenVars.yOffset,bullet.getHitCount());
+                                            PD::drawBitmap(bullet.getX() + gameScreenVars.xOffset, bullet.getY() - 5 + gameScreenVars.yOffset, Images::Hit360[bullet.getHitCount() - 1]);
+                                            break;
+
+                                        default:
+                                            PD::drawBitmap(bullet.getX() + gameScreenVars.xOffset, bullet.getY() - 5 + gameScreenVars.yOffset, Images::Hit[bullet.getHitCount() - 1]);
+                                            break;
+
+                                    }
+
                                     break;
 
                             }
@@ -547,11 +577,22 @@ void Game::game() {
 
                 // Render Boss ..
 
+                bool renderInRed = false;
+
+                if (this->boss.getExplodeCounter(ExplodeType::Body) == 3 || this->boss.getExplodeCounter(ExplodeType::Body) == 4)                           renderInRed = true;
+                if (this->boss.getExplodeCounter(ExplodeType::TopHand) > 0 && (this->boss.getExplodeCounter(ExplodeType::TopHand) / 3) % 2 == 0)            renderInRed = true;
+                if (this->boss.getExplodeCounter(ExplodeType::BottomHand) > 0 && (this->boss.getExplodeCounter(ExplodeType::BottomHand) / 3) % 2 == 0)      renderInRed = true;
+
                 switch (this->gameState) {
 
                     case GameState::Game_BossEntering ... GameState::Game_BossLeaving:
 
-                        PD::drawBitmap(this->boss.getX(), this->boss.getY(), Images::Bosses[(PC::frameCount % 32) / 8]);
+                        if (!renderInRed) {
+                            PD::drawBitmap(this->boss.getX(), this->boss.getY(), Images::Bosses[(PC::frameCount % 32) / 8]);
+                        }
+                        else {
+                            PD::drawBitmap(this->boss.getX(), this->boss.getY(), Images::Boss_04_Red);
+                        }
 
                         for (uint8_t i = 1; i < 4; i++) {
 

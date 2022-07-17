@@ -67,8 +67,8 @@ class Bullet : public Point {
 
                 case BulletType::BossBullet:
 
-                    rect.width = 2;
-                    rect.height = 2;
+                    rect.width = 4;
+                    rect.height = 4;
                     return rect;
 
             }

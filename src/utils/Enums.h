@@ -65,7 +65,8 @@ enum class HitObject : int8_t {
 	LargeAsteroid,
 	Enemy,
     Player,
-    Boss
+    Boss,
+    BossBullet
 };
 
 enum class TitleMode : int8_t {

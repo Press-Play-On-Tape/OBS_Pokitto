@@ -376,15 +376,19 @@ void Game::checkBulletCollision(Bullet &bullet) {
 
     for (Asteroid &largeAsteroid : largeAsteroids) {
 
-        Rect asteroidRect = largeAsteroid.getLargeAsteroidRect();
+        if (largeAsteroid.getActive()) {
+                
+            Rect asteroidRect = largeAsteroid.getLargeAsteroidRect();
 
-        if (collide(bulletRect, asteroidRect)) {
+            if (collide(bulletRect, asteroidRect)) {
 
-            bullet.setHitObject(HitObject::LargeAsteroid);
-            bullet.setHitCount(1);
-            bullet.setMuzzleIndex(0);
-            bullet.setX(largeAsteroid.getX() - 4);
-            return;
+                bullet.setHitObject(HitObject::LargeAsteroid);
+                bullet.setHitCount(1);
+                bullet.setMuzzleIndex(0);
+                bullet.setX(largeAsteroid.getX() - 4);
+                return;
+
+            }
 
         }
 
@@ -567,10 +571,12 @@ void Game::checkBulletCollision(Bullet &bullet) {
 
                 if (collide(bulletRect, bossBulletRect)) {
 
-                    bullet.setX(-10);
-                    bullet.setActive(false);
+                    bullet.setHitObject(HitObject::BossBullet);
+                    bullet.setHitCount(1);
+                    // bullet.setX(-10);
                     bossBullet.setX(-10);
                     bossBullet.setActive(false);
+printf("Hit\n")                    ;
                     return;
 
                 }
