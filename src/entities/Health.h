@@ -2,7 +2,7 @@
 
 #include "Point.h"
 
-class Asteroid : public Point {
+class Health : public Point {
 
     private:
 

@@ -8,7 +8,6 @@ class Enemy : public Point {
 
     private:
         
-        bool active = false;
         Path path = Path::Small;
         Motion motion = Motion::Slow;
 
@@ -19,7 +18,6 @@ class Enemy : public Point {
 
     public:
         
-        bool getActive()                        { return this->active; }
         Path getPath()                          { return this->path; }
         Motion getMotion()                      { return this->motion; }
 
@@ -27,7 +25,6 @@ class Enemy : public Point {
         uint8_t getYOffset()                    { return this->yOffset; }
         uint8_t getExplodeCounter()             { return this->explodeCounter; }
 
-        void setActive(bool val)                { this->active = val; }
         void setPath(Path val)                  { this->path = val; }
         void setMotion(Motion val)              { this->motion = val; }
 

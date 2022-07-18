@@ -85,7 +85,6 @@ void Game::moveBoss() {
 }
 
 
-
 void Game::checkBossBulletCollision(Bullet &bullet) {
 
 
@@ -149,3 +148,36 @@ void Game::checkBossBulletCollision(Bullet &bullet) {
     }
 
 }
+
+
+void Game::launchBoss() {
+
+    gameState = GameState::Game_EnemyLeaving;
+    this->playTheme(Theme::Boss);
+
+    for (Enemy &enemy : this->enemies) {
+
+        if (enemy.getX() > 110) {
+
+            enemy.setActive(false);
+            enemy.setX(Constants::Enemy_OffScreen);
+
+        }
+        
+    }
+
+    for (Asteroid &largeAsteroid : largeAsteroids) {
+
+        if (largeAsteroid.getX() > 110) {
+
+            largeAsteroid.setActive(false);
+                
+        }
+        
+    }
+
+    this->boss.reset();
+
+}
+
+    

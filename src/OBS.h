@@ -27,6 +27,7 @@ class Game {
         Bullets bullets;
         BossBullets bossBullets;
         Boss boss;
+        Health health;
 
         File mainThemeFile;
 
@@ -53,16 +54,20 @@ class Game {
         void title();
 
         void launchLargeAsteroid(Asteroid &asteroid);
+        void launchEnemy(Enemy &enemy);
+        void launchBoss();
+        void launchHealth();
+
         void moveRenderStarfield();
         void moveRenderSmallAsteroids(bool alternate);
         void moveRenderLargeAsteroids(bool alternate);
         void moveBoss();
         void moveEnemies();
-        void introText(int8_t y);
-        void launchEnemy(Enemy &enemy);
+        void moveHealth();
         void checkBulletCollision(Bullet &bullet);
         void checkBossBulletCollision(Bullet &bullet);
 
+        void introText(int8_t y);
         void playTheme(Theme theme);
         void muteTheme();
         void playSoundEffect(SoundEffect soundEffect);

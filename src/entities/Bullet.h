@@ -11,7 +11,6 @@ class Bullet : public Point {
 
         uint8_t hitCount = 0;
         uint8_t muzzleIndex = 0;
-        bool active = true;
 
         Direction direction = Direction::Down;
         HitObject hitObject = HitObject::None;
@@ -20,14 +19,12 @@ class Bullet : public Point {
 
         uint8_t getHitCount()                   { return this->hitCount; }
         uint8_t getMuzzleIndex()                { return this->muzzleIndex; }
-        bool getActive()                        { return this->active; }
 
         Direction getDirection()                { return this->direction; }
         HitObject getHitObject()                { return this->hitObject; }
 
         void setHitCount(uint8_t val)           { this->hitCount = val; }
         void setMuzzleIndex(uint8_t val)        { this->muzzleIndex = val; }
-        void setActive(bool val)                { this->active = val; }
 
         void setDirection(Direction val)        { this->direction = val; }
         void setHitObject(HitObject val)        { this->hitObject = val; }
@@ -37,7 +34,7 @@ class Bullet : public Point {
             this->setX(-1);
             this->hitCount = 0;
             this->hitObject = HitObject::None;
-            this->active = false;
+            this->setActive(false);
 
         }
 

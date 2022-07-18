@@ -576,7 +576,7 @@ void Game::checkBulletCollision(Bullet &bullet) {
                     // bullet.setX(-10);
                     bossBullet.setX(-10);
                     bossBullet.setActive(false);
-printf("Hit\n")                    ;
+// printf("Hit\n")                    ;
                     return;
 
                 }
@@ -601,4 +601,24 @@ void Game::printScore(uint8_t x, uint8_t y, uint16_t score) {
 
     }
 
+}
+
+
+void Game::lauchHealth() {
+
+    this->health.setX(110);
+    this->health.setY(random(0, 74));
+    this->health.setActive(true);
+
+}
+
+
+void Game::moveHealth() {
+
+    this->health.decX(1);
+
+    if (this->health.getX() <= -14) {
+        this->health.setActive(false);
+    }
+    
 }

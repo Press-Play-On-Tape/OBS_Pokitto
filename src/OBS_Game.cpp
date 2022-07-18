@@ -52,33 +52,19 @@ void Game::game() {
             {
                 // Launch a boss ?
 
-                if (gameState == GameState::Game && this->gameScreenVars.distance > 0 && (this->gameScreenVars.distance % 100 == 0) ||  PC::buttons.pressed(BTN_C) || PC::buttons.repeat(BTN_C, 1)) {
+//                if (gameState == GameState::Game && this->gameScreenVars.distance > 0 && (this->gameScreenVars.distance % 100 == 0) ||  PC::buttons.pressed(BTN_C) || PC::buttons.repeat(BTN_C, 1)) {
+                if (gameState == GameState::Game && this->gameScreenVars.distance > 0 && (this->gameScreenVars.distance % 100 == 0)) {
 
-                    gameState = GameState::Game_EnemyLeaving;
-                    this->playTheme(Theme::Boss);
+                    launchBoss();
 
-                    for (Enemy &enemy : this->enemies) {
+                }
 
-                        if (enemy.getX() > 110) {
 
-                            enemy.setActive(false);
-                            enemy.setX(Constants::Enemy_OffScreen);
+                // Launch a Health ?
 
-                        }
-                        
-                    }
+                if (gameState == GameState::Game && this->gameScreenVars.distance > 0 && (this->gameScreenVars.distance % 150 == 0) ||  PC::buttons.pressed(BTN_C) || PC::buttons.repeat(BTN_C, 1)) {
 
-                    for (Asteroid &largeAsteroid : largeAsteroids) {
-
-                        if (largeAsteroid.getX() > 110) {
-
-                            largeAsteroid.setActive(false);
-                                
-                        }
-                        
-                    }
-
-                    this->boss.reset();
+                    launchHealth();
 
                 }
 
@@ -92,6 +78,9 @@ void Game::game() {
 
                 }
 
+
+                // Move the player up or down ..
+
                 player.setY(player.getY() + static_cast<int8_t>(player.getDirection()));
 
                 if (player.getDirection() == Direction::Up && player.getY() == 0) {
@@ -101,6 +90,9 @@ void Game::game() {
                 if (player.getDirection() == Direction::Down && player.getY() == 78) {
                     player.setDirection(Direction::None);
                 }
+
+
+                // Player fires a bullet ?
 
                 if (PC::buttons.pressed(BTN_A) || PC::buttons.pressed(BTN_B) || PC::buttons.pressed(BTN_LEFT) || PC::buttons.pressed(BTN_RIGHT) || PC::buttons.pressed(BTN_UP) || PC::buttons.pressed(BTN_DOWN)) {
                     
@@ -162,7 +154,7 @@ void Game::game() {
                 }
 
 
-                // Player bullets ..
+                // Process player bullets (graphics) ..
 
                 for (Bullet &bullet : bullets.bullets) {
                         
@@ -224,7 +216,7 @@ void Game::game() {
                 }
 
 
-                // Boss bullets ..
+                 // Process boss bullets (graphics) ..
 
                 for (Bullet &bullet : bossBullets.bullets) {
 // printf("%i,%i(%i) ",bullet.x,bullet.y, bullet.active);             
@@ -475,6 +467,7 @@ void Game::game() {
     moveRenderLargeAsteroids(false);
     moveBoss();
     moveEnemies();
+    moveHealth();
 
 // printf("%i\n", this->gameState);
     switch (gameState) {
@@ -531,7 +524,7 @@ void Game::game() {
                                     switch (bullet.getHitObject()) {
 
                                         case HitObject::BossBullet:
-printf("Hit bossbullet %i %i - %i\n",bullet.getX() + gameScreenVars.xOffset, bullet.getY() - 5 + gameScreenVars.yOffset,bullet.getHitCount());
+// printf("Hit bossbullet %i %i - %i\n",bullet.getX() + gameScreenVars.xOffset, bullet.getY() - 5 + gameScreenVars.yOffset,bullet.getHitCount());
                                             PD::drawBitmap(bullet.getX() + gameScreenVars.xOffset, bullet.getY() - 5 + gameScreenVars.yOffset, Images::Hit360[bullet.getHitCount() - 1]);
                                             break;
 
@@ -653,6 +646,8 @@ printf("Hit bossbullet %i %i - %i\n",bullet.getX() + gameScreenVars.xOffset, bul
                 PD::setColor(6);
 
                 uint8_t health_Bar = player.getHealth() / Constants::Health_Factor;
+                if (health_Bar == 16) health_Bar = 15;
+
                 uint8_t digits[5] = {};
                 extractDigits(digits, this->gameScreenVars.score);
                 uint8_t location = 106;
@@ -666,6 +661,15 @@ printf("Hit bossbullet %i %i - %i\n",bullet.getX() + gameScreenVars.xOffset, bul
                 PD::drawBitmap(66, 0, Images::Shield);
                 PD::setColor(6);
                 PD::drawLine(91, 2, 91 + health_Bar, 2);
+
+
+                // Render health ..
+
+                if (this->health.getActive()) {
+
+                    PD::drawBitmap(this->health.getX(), this->health.getY(), Images::GetHealth);
+
+                }
 
             }
 

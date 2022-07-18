@@ -11,7 +11,6 @@ class Boss : public Point {
 
     private:
 
-        bool active = false;
         uint8_t pathCounter = 0;         
         uint8_t explodeCounter[3] = { 0, 0, 0};
         uint8_t topHealth = 3;
@@ -22,14 +21,12 @@ class Boss : public Point {
 
     public:
 
-        bool getActive()                                        { return this->active; }
         uint8_t getPathCounter()                                { return this->pathCounter; }
         uint8_t getExplodeCounter(ExplodeType ex)               { return this->explodeCounter[static_cast<uint8_t>(ex)]; }
         uint8_t getTopHealth()                                  { return this->topHealth; }
         uint8_t getBottomHealth()                               { return this->bottomHealth; }
         Point &getExplodePoint()                                { return this->explodePoint; }
 
-        void setActive(bool val)                                { this->active = val; }
         void setPathCounter(uint8_t val)                        { this->pathCounter = val; }
         void setExplodeCounter(ExplodeType ex, uint8_t val)     { this->explodeCounter[static_cast<uint8_t>(ex)] = val; }
         void setTopHealth(uint8_t val)                          { this->topHealth = val; }
@@ -38,7 +35,7 @@ class Boss : public Point {
 
         void reset() {
 
-            this->active = false;
+            this->setActive(false);
             this->setY(0);         
             this->setX(0);         
             this->pathCounter = 0;         
