@@ -123,7 +123,7 @@ void Game::checkBossBulletCollision(Bullet &bullet) {
 
         if (player.getHealth() > 0)  {
 
-            player.decHealth(3);
+            player.decHealth(5);
 
             #ifdef SOUNDS
                 playSoundEffect(SoundEffect::Mini_Explosion);
@@ -132,6 +132,8 @@ void Game::checkBossBulletCollision(Bullet &bullet) {
             if (player.getHealth() == 0) {
 
                 player.setExplodeCounter(21);
+                this->explode(14, player.getY() + 3, ExplosionSize::Medium, this->gameScreenVars.getColor());
+                
 
                 #ifdef SOUNDS
 //                                        tunes.playScore(Sounds::PlayerDies);

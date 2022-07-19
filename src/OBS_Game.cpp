@@ -52,8 +52,8 @@ void Game::game() {
             {
                 // Launch a boss ?
 
-//                if (gameState == GameState::Game && this->gameScreenVars.distance > 0 && (this->gameScreenVars.distance % 100 == 0) ||  PC::buttons.pressed(BTN_C) || PC::buttons.repeat(BTN_C, 1)) {
-                if (gameState == GameState::Game && this->gameScreenVars.distance > 0 && (this->gameScreenVars.distance % 100 == 0)) {
+               if (gameState == GameState::Game && this->gameScreenVars.distance > 0 && (this->gameScreenVars.distance % 100 == 0) ||  PC::buttons.pressed(BTN_C) || PC::buttons.repeat(BTN_C, 1)) {
+                // if (gameState == GameState::Game && this->gameScreenVars.distance > 0 && (this->gameScreenVars.distance % 100 == 0)) {
 
                     launchBoss();
 
@@ -62,7 +62,8 @@ void Game::game() {
 
                 // Launch a Health ?
 
-                if (gameState == GameState::Game && this->gameScreenVars.distance > 0 && (this->gameScreenVars.distance % 150 == 0) ||  PC::buttons.pressed(BTN_C) || PC::buttons.repeat(BTN_C, 1)) {
+//                if (gameState == GameState::Game && this->gameScreenVars.distance > 0 && (this->gameScreenVars.distance % 150 == 0) ||  PC::buttons.pressed(BTN_C) || PC::buttons.repeat(BTN_C, 1)) {
+                if (gameState == GameState::Game && this->gameScreenVars.distance > 0 && (this->gameScreenVars.distance % 150 == 0)) {
 
                     launchHealth();
 
@@ -294,6 +295,7 @@ void Game::game() {
                                 if (player.getHealth() == 0) {
 
                                     player.setExplodeCounter(21);
+                                    this->explode(14, player.getY() + 3, ExplosionSize::Medium, this->gameScreenVars.getColor());
 
                                     #ifdef SOUNDS
                                         playSoundEffect(SoundEffect::Mini_Explosion);
@@ -347,7 +349,9 @@ void Game::game() {
                                 #endif
                             
                                 if (player.getHealth() == 0) {
+
                                     player.setExplodeCounter(21);
+                                    this->explode(14, player.getY() + 3, ExplosionSize::Medium, this->gameScreenVars.getColor());
 
                                     #ifdef SOUNDS
 //                                        tunes.playScore(Sounds::PlayerDies);
@@ -484,12 +488,6 @@ void Game::game() {
 
                 }
                 
-                if (player.getExplodeCounter() > 0) {
-
-                    PD::drawBitmap(6, player.getY() + gameScreenVars.yOffset, Images::Puffs[(21 - player.getExplodeCounter()) / 3]);
-
-                }
-                
                 if (player.updateExplosion()) {
                 
                     gameState = GameState::Score;
@@ -599,35 +597,14 @@ void Game::game() {
 
                         }
 
-                        if (this->boss.getExplodeCounter(ExplodeType::TopHand) > 0) {
-
-                            PD::drawBitmap(this->boss.getX() + gameScreenVars.xOffset - 2, this->boss.getY() + gameScreenVars.yOffset + 2, Images::Puffs[(21 - this->boss.getExplodeCounter(ExplodeType::TopHand)) / 3]);
-                            this->boss.decExplodeCounter(ExplodeType::TopHand);
-
-                        }
-
-                        if (this->boss.getExplodeCounter(ExplodeType::BottomHand) > 0) {
-
-                            PD::drawBitmap(this->boss.getX() + gameScreenVars.xOffset - 2, this->boss.getY() + gameScreenVars.yOffset + 25, Images::Puffs[(21 - this->boss.getExplodeCounter(ExplodeType::BottomHand)) / 3]);
-                            this->boss.decExplodeCounter(ExplodeType::BottomHand);
-
-                        }
-
                         if (this->boss.getExplodeCounter(ExplodeType::Body) > 0) {
 
                             PD::drawBitmap(this->boss.getX() + this->boss.getExplodePoint().getX() + gameScreenVars.xOffset, 
                                            this->boss.getY() + this->boss.getExplodePoint().getY() - 5 + gameScreenVars.yOffset, 
                                            Images::Hit[(this->boss.getExplodeCounter(ExplodeType::Body) - 1) / 3]);
-// printf("hit %i %i\n",this->boss.getExplodeCounter(ExplodeType::Body), (this->boss.getExplodeCounter(ExplodeType::Body) - 1) / 3 );
                             this->boss.decExplodeCounter(ExplodeType::Body);
                         
                         }
-
-// PD::drawRect(this->boss.x, this->boss.y + 7, 4, 3 );
-// PD::drawRect(this->boss.x, this->boss.y + 30, 4, 3 );
-// PD::drawRect(this->boss.x + 8, this->boss.y + 1, 18, 38 );
-// PD::drawRect(this->boss.x + 2, this->boss.y + 4, 16, 9 );
-// PD::drawRect(this->boss.x + 2, this->boss.y + 27, 16, 9 );
 
                         break;
 
@@ -670,6 +647,12 @@ void Game::game() {
                     PD::drawBitmap(this->health.getX(), this->health.getY(), Images::GetHealth);
 
                 }
+
+
+                // Redner shockwaves and particles ..
+
+                this->renderShockwave();
+                this->renderParticles();
 
             }
 

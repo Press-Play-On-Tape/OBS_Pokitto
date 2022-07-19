@@ -37,6 +37,26 @@ struct GameScreenVars {
     uint16_t score = 0;
     uint16_t distance = 0;
 
+    ExplosionColor explosionColor = ExplosionColor::Blue;
+
+    ExplosionColor getColor() {
+
+        switch (this->explosionColor) {
+
+            case ExplosionColor::Blue:
+                this->explosionColor = ExplosionColor::Red;
+                break;
+
+            case ExplosionColor::Red:
+                this->explosionColor = ExplosionColor::Blue;
+                break;
+                
+        }
+
+        return this->explosionColor;
+
+    }
+
     void reset() {
 
         this->xOffset = 0;

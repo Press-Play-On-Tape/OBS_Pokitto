@@ -77,6 +77,17 @@ enum class TitleMode : int8_t {
 	Entrance,
 };
 
+enum class ExplosionSize : int8_t {
+    Small,
+    Medium,
+    Large
+};
+
+enum class ExplosionColor : int8_t {
+    Blue,
+    Red
+};
+
 inline SoundEffects &operator++(SoundEffects &c ) {
     c = static_cast<SoundEffects>( (static_cast<uint8_t>(c) + 1) % 4 );
     return c;

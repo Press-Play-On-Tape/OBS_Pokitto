@@ -107,12 +107,6 @@ void Game::moveEnemies() {
             PD::drawBitmap(enemy.getX() + gameScreenVars.xOffset, enemy.getY() + gameScreenVars.yOffset, Images::Enemy);
 
         }
-
-        if (enemy.getExplodeCounter() > 0) {
-
-            PD::drawBitmap(enemy.getX() +gameScreenVars. xOffset - 3, enemy.getY() + gameScreenVars.yOffset, Images::Puffs[(21 - enemy.getExplodeCounter()) / 3]);
-
-        }
         
         if (enemy.updateExplosion()) {
         

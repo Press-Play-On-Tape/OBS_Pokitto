@@ -403,13 +403,16 @@ void Game::checkBulletCollision(Bullet &bullet) {
 
         if (enemy.getActive() && collide(bulletRect, enemyRect)) {
 
-            bullet.setHitObject(HitObject::Enemy);
-            bullet.setHitCount(1);
-            bullet.setMuzzleIndex(0);
-            bullet.setX(enemy.getX() - 4);
+            // bullet.setHitObject(HitObject::Enemy);
+            // bullet.setHitCount(1);
+            // bullet.setMuzzleIndex(0);
+            // bullet.setX(enemy.getX() - 4);
+
+            bullet.setActive(false);
 
             enemy.setExplodeCounter(21);
             enemy.setActive(false);
+            this->explode(enemy.getX() + 6, enemy.getY() + 6, ExplosionSize::Small, this->gameScreenVars.getColor());
             this->gameScreenVars.score = this->gameScreenVars.score + 5;
 
             PC::setFrameRate(50 + (this->gameScreenVars.score / 24));
@@ -443,10 +446,14 @@ void Game::checkBulletCollision(Bullet &bullet) {
                     this->boss.setTopHealth(this->boss.getTopHealth() - 1);
                     this->boss.setExplodeCounter(ExplodeType::TopHand, 21);
 
-                    bullet.setHitObject(HitObject::Boss);
-                    bullet.setMuzzleIndex(0);
-                    bullet.setX(-10);
                     bullet.setActive(false);
+
+                    if (this->boss.getTopHealth() == 0 && this->boss.getBottomHealth() == 0) {
+                        this->explode(boss.getX() + 10, boss.getY() + 17, ExplosionSize::Large, this->gameScreenVars.getColor());
+                    }
+                    else {
+                        this->explode(boss.getX() + 4, boss.getY() + 8, ExplosionSize::Medium, this->gameScreenVars.getColor());
+                    }
 
                     #ifdef SOUNDS
                         playSoundEffect(SoundEffect::Mini_Explosion);
@@ -473,12 +480,15 @@ void Game::checkBulletCollision(Bullet &bullet) {
 
                     this->boss.setBottomHealth(this->boss.getBottomHealth() - 1);
                     this->boss.setExplodeCounter(ExplodeType::BottomHand, 21);
-
-                    bullet.setHitObject(HitObject::Boss);
-                    bullet.setMuzzleIndex(0);
-                    bullet.setX(-10);
                     bullet.setActive(false);
-                    
+
+                    if (this->boss.getTopHealth() == 0 && this->boss.getBottomHealth() == 0) {
+                        this->explode(boss.getX() + 14, boss.getY() + 17, ExplosionSize::Large, ExplosionColor::Red);
+                    }
+                    else {
+                        this->explode(boss.getX() + 4, boss.getY() + 29, ExplosionSize::Medium, ExplosionColor::Red);
+                    }
+
                     #ifdef SOUNDS
                         playSoundEffect(SoundEffect::Mini_Explosion);
                     #endif   
@@ -603,8 +613,7 @@ void Game::printScore(uint8_t x, uint8_t y, uint16_t score) {
 
 }
 
-
-void Game::lauchHealth() {
+void Game::launchHealth() {
 
     this->health.setX(110);
     this->health.setY(random(0, 74));
@@ -612,10 +621,9 @@ void Game::lauchHealth() {
 
 }
 
-
 void Game::moveHealth() {
 
-    this->health.decX(1);
+    this->health.decX();
 
     if (this->health.getX() <= -14) {
         this->health.setActive(false);

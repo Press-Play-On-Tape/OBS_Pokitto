@@ -86,6 +86,18 @@ void Game::title_Init() {
 //
 void Game::title() {
     
+    // if (PC::buttons.pressed(BTN_A)) {
+    //     explode(55, 44, ExplosionSize::Small);
+    // }
+    
+    // if (PC::buttons.pressed(BTN_B)) {
+    //     explode(55, 44, ExplosionSize::Medium);
+    // }
+    
+    // if (PC::buttons.pressed(BTN_C)) {
+    //     explode(55, 44, ExplosionSize::Large);
+    // }
+
     if (PC::buttons.pressed(BTN_A) || PC::buttons.pressed(BTN_B) || PC::buttons.pressed(BTN_C)) {
 
         switch (titleScreenVars.mode) {
@@ -167,10 +179,14 @@ void Game::title() {
             }
 
 
-            moveRenderSmallAsteroids(true);
-            moveRenderLargeAsteroids(true);
+            this->moveRenderSmallAsteroids(true);
+            this->moveRenderLargeAsteroids(true);
+
 
             PD::drawBitmap(24, 26, Images::Title);
+
+            // this->renderShockwave();
+            // this->renderParticles();
 
             for (uint8_t i = 0; i < Constants::SmallAsteroid_Size; i++) {
 
