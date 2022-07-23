@@ -35,7 +35,7 @@ void Game::game_Init() {
 
     player.reset();
     gameState = GameState::Game;
-    gameScreenVars.reset();
+    this->gameScreenVars.reset();
     PC::setFrameRate(50);
 
 }   
@@ -43,18 +43,44 @@ void Game::game_Init() {
 void Game::game() {
 
 
+    // Housekeeping ..
+
+    switch (gameState) {
+    
+        case GameState::Game:
+
+            // Increase score based on distance travelled ..
+
+            if (PC::frameCount % Constants::ScoreDistance == 0) {
+
+                this->gameScreenVars.score++;
+                this->gameScreenVars.distance++;
+                this->gameScreenVars.bossCounter--;
+                this->gameScreenVars.healthCounter--;
+
+            }
+
+            break;
+
+        default:
+            break;
+
+    }
+
+
     // Move player ..
 
     switch (gameState) {
     
         case GameState::Game ... GameState::Game_BossLeaving:
-
             {
+
+
                 // Launch a boss ?
 
-               if (gameState == GameState::Game && this->gameScreenVars.distance > 0 && (this->gameScreenVars.distance % 100 == 0) ||  PC::buttons.pressed(BTN_C) || PC::buttons.repeat(BTN_C, 1)) {
-                // if (gameState == GameState::Game && this->gameScreenVars.distance > 0 && (this->gameScreenVars.distance % 100 == 0)) {
+                if (gameState == GameState::Game && this->gameScreenVars.bossCounter == 0) {
 
+                    gameScreenVars.resetBossCounter();
                     launchBoss();
 
                 }
@@ -62,20 +88,10 @@ void Game::game() {
 
                 // Launch a Health ?
 
-//                if (gameState == GameState::Game && this->gameScreenVars.distance > 0 && (this->gameScreenVars.distance % 150 == 0) ||  PC::buttons.pressed(BTN_C) || PC::buttons.repeat(BTN_C, 1)) {
-                if (gameState == GameState::Game && this->gameScreenVars.distance > 0 && (this->gameScreenVars.distance % 150 == 0)) {
+                if (gameState == GameState::Game && this->gameScreenVars.healthCounter == 0) {
 
+                    gameScreenVars.resetHealthCounter();
                     launchHealth();
-
-                }
-
-
-                // Increase score based on distance travelled ..
-
-                if (PC::frameCount % Constants::ScoreDistance == 0) {
-
-                    this->gameScreenVars.score++;
-                    this->gameScreenVars.distance++;
 
                 }
 
@@ -271,7 +287,7 @@ void Game::game() {
 
 
 
-                // Has the player hit a asteroid?
+                // Has the player hit an asteroid?
 
                 bool collision = false;
                 Rect playerRect = player.getRect();
@@ -315,16 +331,16 @@ void Game::game() {
 
                 if (collision) {
 
-                    gameScreenVars.offsetCount++;
+                    this->gameScreenVars.offsetCount++;
 
-                    if (gameScreenVars.offsetCount > 4) {
+                    if (this->gameScreenVars.offsetCount > 4) {
 
-                        gameScreenVars.offsetCount = 1;
+                        this->gameScreenVars.offsetCount = 1;
 
                     }
 
-                    gameScreenVars.xOffset = xOffsets[gameScreenVars.offsetCount - 1];
-                    gameScreenVars.yOffset = yOffsets[gameScreenVars.offsetCount - 1];
+                    this->gameScreenVars.xOffset = xOffsets[this->gameScreenVars.offsetCount - 1];
+                    this->gameScreenVars.yOffset = yOffsets[this->gameScreenVars.offsetCount - 1];
                     
                     // arduboy.invert(offsetCount % 2);
 
@@ -369,26 +385,49 @@ void Game::game() {
 
                     if (collision) {
 
-                        gameScreenVars.offsetCount++;
+                        this->gameScreenVars.offsetCount++;
 
-                        if (gameScreenVars.offsetCount > 4) {
+                        if (this->gameScreenVars.offsetCount > 4) {
 
-                            gameScreenVars.offsetCount = 1;
+                            this->gameScreenVars.offsetCount = 1;
 
                         }
 
-                        gameScreenVars.xOffset = xOffsets[gameScreenVars.offsetCount - 1];
-                        gameScreenVars.yOffset = yOffsets[gameScreenVars.offsetCount - 1];
+                        this->gameScreenVars.xOffset = xOffsets[this->gameScreenVars.offsetCount - 1];
+                        this->gameScreenVars.yOffset = yOffsets[this->gameScreenVars.offsetCount - 1];
                         
                         // arduboy.invert(offsetCount % 2);
 
                     }
                     else {
 
-                        gameScreenVars.offsetCount = 0;
-                        gameScreenVars.xOffset = 0;
-                        gameScreenVars.yOffset = 0;
+                        this->gameScreenVars.offsetCount = 0;
+                        this->gameScreenVars.xOffset = 0;
+                        this->gameScreenVars.yOffset = 0;
                         // arduboy.invert(false);
+
+                    }
+
+                }
+
+
+                // Has the player hit a health package?
+
+                if (this->health.getActive()) {
+
+                    Rect healthRect = this->health.getRect();
+
+                    if (collide(playerRect, healthRect)) {
+
+                        this->player.incHealth(random(3 * Constants::Health_Factor, 6 * Constants::Health_Factor));
+                        this->health.setActive(false);
+                        this->explode(this->health.getX() + 5, this->health.getY() + 5, ExplosionSize::Small, this->gameScreenVars.getColor());
+
+                        #ifdef SOUNDS
+                            playSoundEffect(SoundEffect::Health);
+                        #endif            
+
+                        return;
 
                     }
 
@@ -400,7 +439,7 @@ void Game::game() {
 
         case GameState::Score:
 
-            if (gameScreenVars.highScoreCounter == 0) {
+            if (this->gameScreenVars.highScoreCounter == 0) {
 
                 if (PC::buttons.pressed(BTN_A) || PC::buttons.pressed(BTN_B) || PC::buttons.pressed(BTN_LEFT) || PC::buttons.pressed(BTN_RIGHT) || PC::buttons.pressed(BTN_UP) || PC::buttons.pressed(BTN_DOWN)) {
 
@@ -411,7 +450,7 @@ void Game::game() {
             }
             else {
 
-                gameScreenVars.highScoreCounter--;
+                this->gameScreenVars.highScoreCounter--;
 
             }
 
@@ -420,17 +459,17 @@ void Game::game() {
 
             if (PC::buttons.pressed(BTN_C) || PC::buttons.repeat(BTN_C, 1)) {
 
-                gameScreenVars.clearScores++;
+                this->gameScreenVars.clearScores++;
 
-                switch (gameScreenVars.clearScores) {
+                switch (this->gameScreenVars.clearScores) {
 
                     case 21 ... 60:
                         //arduboy.setRGBled(128 - (clearScores * 2), 0, 0);
                         break;
 
                     case 61:
-                        gameScreenVars.clearScores = 0;
-                        gameScreenVars.scoreIndex = 255;
+                        this->gameScreenVars.clearScores = 0;
+                        this->gameScreenVars.scoreIndex = 255;
                         this->gameScreenVars.score = 0;
                         //arduboy.setRGBled(0, 0, 0);
                         cookie->reset();
@@ -446,10 +485,10 @@ void Game::game() {
             }
             else {
 
-                if (gameScreenVars.clearScores > 0) {
+                if (this->gameScreenVars.clearScores > 0) {
                 
                     //arduboy.setRGBled(0, 0, 0);
-                    gameScreenVars.clearScores = 0;
+                    this->gameScreenVars.clearScores = 0;
 
                 }
             
@@ -473,7 +512,7 @@ void Game::game() {
     moveEnemies();
     moveHealth();
 
-// printf("%i\n", this->gameState);
+
     switch (gameState) {
 
         case GameState::Game ... GameState::Game_BossLeaving:
@@ -483,16 +522,16 @@ void Game::game() {
 
                 if (player.getHealth() > 0 || player.getExplodeCounter() > 16) {
 
-                    PD::drawBitmap(9 + gameScreenVars.xOffset, player.getY() + gameScreenVars.yOffset, Images::PlayerShip);
-                    PD::drawBitmap(gameScreenVars.xOffset, player.getY() + 3 + gameScreenVars.yOffset, Images::ShipParticle[PC::frameCount % 8 < 4]);
+                    PD::drawBitmap(9 + this->gameScreenVars.xOffset, player.getY() + this->gameScreenVars.yOffset, Images::PlayerShip);
+                    PD::drawBitmap(this->gameScreenVars.xOffset, player.getY() + 3 + this->gameScreenVars.yOffset, Images::ShipParticle[PC::frameCount % 8 < 4]);
 
                 }
                 
                 if (player.updateExplosion()) {
                 
                     gameState = GameState::Score;
-                    gameScreenVars.highScoreCounter = 64;
-                    gameScreenVars.scoreIndex = cookie->saveScore(this->gameScreenVars.score);
+                    this->gameScreenVars.highScoreCounter = 64;
+                    this->gameScreenVars.scoreIndex = cookie->saveScore(this->gameScreenVars.score);
                     this->muteTheme();
 
                 }
@@ -506,7 +545,7 @@ void Game::game() {
                             
                         if (bullet.getMuzzleIndex() > 1) {
 
-                            PD::drawBitmap(bullet.getX() + gameScreenVars.xOffset, bullet.getY() + gameScreenVars.yOffset, Images::Muzzle[3 - (bullet.getMuzzleIndex() / 2)]);
+                            PD::drawBitmap(bullet.getX() + this->gameScreenVars.xOffset, bullet.getY() + this->gameScreenVars.yOffset, Images::Muzzle[3 - (bullet.getMuzzleIndex() / 2)]);
 
                         }
                         else {
@@ -514,7 +553,7 @@ void Game::game() {
                             switch (bullet.getHitCount()) {
 
                                 case 0:
-                                    PD::drawBitmap(bullet.getX() + gameScreenVars.xOffset, bullet.getY() + gameScreenVars.yOffset, Images::Bullet);
+                                    PD::drawBitmap(bullet.getX() + this->gameScreenVars.xOffset, bullet.getY() + this->gameScreenVars.yOffset, Images::Bullet);
                                     break;
 
                                 default:
@@ -522,12 +561,11 @@ void Game::game() {
                                     switch (bullet.getHitObject()) {
 
                                         case HitObject::BossBullet:
-// printf("Hit bossbullet %i %i - %i\n",bullet.getX() + gameScreenVars.xOffset, bullet.getY() - 5 + gameScreenVars.yOffset,bullet.getHitCount());
-                                            PD::drawBitmap(bullet.getX() + gameScreenVars.xOffset, bullet.getY() - 5 + gameScreenVars.yOffset, Images::Hit360[bullet.getHitCount() - 1]);
+                                            PD::drawBitmap(bullet.getX() + this->gameScreenVars.xOffset, bullet.getY() - 5 + this->gameScreenVars.yOffset, Images::Hit360[bullet.getHitCount() - 1]);
                                             break;
 
                                         default:
-                                            PD::drawBitmap(bullet.getX() + gameScreenVars.xOffset, bullet.getY() - 5 + gameScreenVars.yOffset, Images::Hit[bullet.getHitCount() - 1]);
+                                            PD::drawBitmap(bullet.getX() + this->gameScreenVars.xOffset, bullet.getY() - 5 + this->gameScreenVars.yOffset, Images::Hit[bullet.getHitCount() - 1]);
                                             break;
 
                                     }
@@ -552,11 +590,11 @@ void Game::game() {
                         switch (bullet.getHitCount()) {
 
                             case 0:
-                                PD::drawBitmap(bullet.getX() + gameScreenVars.xOffset, bullet.getY() + gameScreenVars.yOffset, Images::BossBullet);
+                                PD::drawBitmap(bullet.getX() + this->gameScreenVars.xOffset, bullet.getY() + this->gameScreenVars.yOffset, Images::BossBullet);
                                 break;
 
                             default:
-                                PD::drawBitmap(bullet.getX() + gameScreenVars.xOffset, bullet.getY() - 5 + gameScreenVars.yOffset, Images::Hit[bullet.getHitCount() - 1 + 3]);
+                                PD::drawBitmap(bullet.getX() + this->gameScreenVars.xOffset, bullet.getY() - 5 + this->gameScreenVars.yOffset, Images::Hit[bullet.getHitCount() - 1 + 3]);
                                 break;
 
                         }
@@ -576,10 +614,15 @@ void Game::game() {
 
                 switch (this->gameState) {
 
-                    case GameState::Game_BossEntering ... GameState::Game_BossLeaving:
+                    case GameState::Game_BossEntering ... GameState::Game_Boss:
 
                         if (!renderInRed) {
-                            PD::drawBitmap(this->boss.getX(), this->boss.getY(), Images::Bosses[(PC::frameCount % 32) / 8]);
+                            if (this->gameScreenVars.bossColor == BossColor::Blue) {
+                                PD::drawBitmap(this->boss.getX(), this->boss.getY(), Images::Bosses_Blue[(PC::frameCount % 32) / 8]);
+                            }
+                            else {
+                                PD::drawBitmap(this->boss.getX(), this->boss.getY(), Images::Bosses_Green[(PC::frameCount % 32) / 8]);
+                            }
                         }
                         else {
                             PD::drawBitmap(this->boss.getX(), this->boss.getY(), Images::Boss_04_Red);
@@ -599,8 +642,8 @@ void Game::game() {
 
                         if (this->boss.getExplodeCounter(ExplodeType::Body) > 0) {
 
-                            PD::drawBitmap(this->boss.getX() + this->boss.getExplodePoint().getX() + gameScreenVars.xOffset, 
-                                           this->boss.getY() + this->boss.getExplodePoint().getY() - 5 + gameScreenVars.yOffset, 
+                            PD::drawBitmap(this->boss.getX() + this->boss.getExplodePoint().getX() + this->gameScreenVars.xOffset, 
+                                           this->boss.getY() + this->boss.getExplodePoint().getY() - 5 + this->gameScreenVars.yOffset, 
                                            Images::Hit[(this->boss.getExplodeCounter(ExplodeType::Body) - 1) / 3]);
                             this->boss.decExplodeCounter(ExplodeType::Body);
                         
@@ -615,7 +658,6 @@ void Game::game() {
                 }
 
 
-
                 // Render the HUD ..
 
                 PD::setColor(0);
@@ -627,6 +669,7 @@ void Game::game() {
 
                 uint8_t digits[5] = {};
                 extractDigits(digits, this->gameScreenVars.score);
+
                 uint8_t location = 106;
 
                 for (uint8_t j = 0; j < 5; ++j, location -= 4) {
@@ -644,12 +687,12 @@ void Game::game() {
 
                 if (this->health.getActive()) {
 
-                    PD::drawBitmap(this->health.getX(), this->health.getY(), Images::GetHealth);
+                    PD::drawBitmap(this->health.getX(), this->health.getY(), Images::GetHealth[PC::frameCount % 32 < 16]);
 
                 }
 
 
-                // Redner shockwaves and particles ..
+                // Render shockwaves and particles ..
 
                 this->renderShockwave();
                 this->renderParticles();
@@ -672,15 +715,15 @@ void Game::game() {
                 PD::setCursor(15, 38);
                 PD::print("Top Scores");
 
-                if (gameScreenVars.scoreIndex != 0 || PC::frameCount % 48 < 24) {
+                if (this->gameScreenVars.scoreIndex != 0 || PC::frameCount % 48 < 24) {
                     this->printScore(88, 38, this->cookie->score[0]);
                 }
 
-                if (gameScreenVars.scoreIndex != 1 || PC::frameCount % 48 < 24) {
+                if (this->gameScreenVars.scoreIndex != 1 || PC::frameCount % 48 < 24) {
                     this->printScore(88, 47, this->cookie->score[1]);
                 }
 
-                if (gameScreenVars.scoreIndex != 2 || PC::frameCount % 48 < 24) {
+                if (this->gameScreenVars.scoreIndex != 2 || PC::frameCount % 48 < 24) {
                     this->printScore(88, 56, this->cookie->score[2]);
                 }
 

@@ -104,7 +104,7 @@ void Game::moveEnemies() {
 
         if (enemy.getActive() || enemy.getExplodeCounter() > 16) {
 
-            PD::drawBitmap(enemy.getX() + gameScreenVars.xOffset, enemy.getY() + gameScreenVars.yOffset, Images::Enemy);
+            PD::drawBitmap(enemy.getX() + this->gameScreenVars.xOffset, enemy.getY() + this->gameScreenVars.yOffset, Images::Enemy);
 
         }
         

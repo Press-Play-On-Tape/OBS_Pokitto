@@ -14,86 +14,14 @@ float Game::getRandomFloat(int8_t min, int8_t max) {
 
 void Game::explode(int16_t x, int16_t y, ExplosionSize explosionSize, ExplosionColor explosionColor) {
 
-    //uint8_t particleIdx = this->particles.getInactiveParticle();
-
-
-    // One non-moving particle to hide the object being destroyed ..
-
-    // if (particleIdx != Constants::Particle_None) {
-
-    //     Part &particle = this->particles.particles[particleIdx];
-
-    //     particle.setX(expX);
-    //     particle.setY(expY);
-    //     particle.setDeltaX(0);
-    //     particle.setDeltaY(0);
-    //     particle.setAge(0);
-    //     particle.setSize(10);
-    //     particle.maxAge=0;
-    //     particle.isBlue=isBlue;
-    //     particle.setActive(true);
-
-    //     isBlue = !isBlue;
-
-    // }
-
-    /* 
-    for (uint8_t i = 0; i < 30; i++) {
-
-        uint8_t particleIdx = this->particles.getInactiveParticle();
-
-        if (particleIdx != Constants::Particle_None) {
-
-            Part &particle = this->particles.particles[particleIdx];
-
-            particle.setX(expX);
-            particle.setY(expY);
-            particle.setDeltaX(this->getRandomFloat(-3, 3));
-            particle.setDeltaY(this->getRandomFloat(-3, 3));
-            particle.setAge(random(0, 2));
-            particle.setMaxAge(10 + random(0, 10));
-            particle.setSize(this->getRandomFloat(1, 5));
-            particle.isBlue=isBlue;
-            particle.setActive(true);
-
-            isBlue = !isBlue;
-
-        }
-
-    }
-      
-    for (uint8_t i = 0; i < 15; i++) {
-
-        uint8_t particleIdx = this->particles.getInactiveParticle();
-
-        if (particleIdx != Constants::Particle_None) {
-
-            Part &particle = this->particles.particles[particleIdx];
-
-            particle.setX(expX);
-            particle.setY(expY);            
-            particle.setDeltaX(this->getRandomFloat(-8, 8));
-            particle.setDeltaY(this->getRandomFloat(-8, 8));
-            particle.setAge(random(0, 2));
-            particle.setMaxAge(10 + random(0, 10));
-            particle.setSize(this->getRandomFloat(1, 5));
-            particle.isBlue=isBlue;
-            particle.setActive(true);
-
-            isBlue = !isBlue;
-
-        }
-
-    }
-    */
-
     bool isBlue = false;
 
-    const uint8_t sizeMax[] = { 3, 4, 8 };
+    const uint8_t sizeMax[] = { 3, 4, 12 };
     const uint8_t deltaMax[] = { 4, 6, 8 };
     const uint8_t ageMax[] = { 10, 7, 12 };
-    const uint8_t particlesToLaunch[] = { 20, 30, 60 };
-    const uint8_t shockwaveRadius[] = { 20, 25, 35 };
+    const uint8_t ageStart[] = { 2, 3, 5 };
+    const uint8_t particlesToLaunch[] = { 20, 30, 75 };
+    const uint8_t shockwaveRadius[] = { 0, 40, 55 };
 
     for (uint8_t i = 0; i < particlesToLaunch[static_cast<uint8_t>(explosionSize)]; i++) {
 
@@ -107,7 +35,7 @@ void Game::explode(int16_t x, int16_t y, ExplosionSize explosionSize, ExplosionC
             particle.setY(y);
             particle.setDeltaX(this->getRandomFloat(-deltaMax[static_cast<uint8_t>(explosionSize)], deltaMax[static_cast<uint8_t>(explosionSize)]));
             particle.setDeltaY(this->getRandomFloat(-deltaMax[static_cast<uint8_t>(explosionSize)], deltaMax[static_cast<uint8_t>(explosionSize)]));
-            particle.setAge(random(0, 2));
+            particle.setAge(random(0, ageStart[static_cast<uint8_t>(explosionSize)]));
             particle.setMaxAge(ageMax[static_cast<uint8_t>(explosionSize)] + random(0, ageMax[static_cast<uint8_t>(explosionSize)]));
             particle.setColor(explosionColor);
             particle.setActive(true);
@@ -126,54 +54,15 @@ void Game::explode(int16_t x, int16_t y, ExplosionSize explosionSize, ExplosionC
         }
 
     }
-      
-    // for (uint8_t i = 0; i < 15; i++) {
 
-    //     uint8_t particleIdx = this->particles.getInactiveParticle();
+    if (shockwaveRadius[static_cast<uint8_t>(explosionSize)] > 0) {  
 
-    //     if (particleIdx != Constants::Particle_None) {
+        createShockwave(x, y, shockwaveRadius[static_cast<uint8_t>(explosionSize)]);
 
-    //         Part &particle = this->particles.particles[particleIdx];
-
-    //         particle.setX(expX);
-    //         particle.setY(expY);            
-    //         particle.setDeltaX(this->getRandomFloat(-8, 8));
-    //         particle.setDeltaY(this->getRandomFloat(-8, 8));
-    //         particle.setAge(random(0, 2));
-    //         particle.setMaxAge(10 + random(0, 10));
-    //         particle.setSize(this->getRandomFloat(1, 5));
-    //         particle.isBlue=isBlue;
-    //         particle.setActive(true);
-
-    //         isBlue = !isBlue;
-
-    //     }
-
-    // }
-
-    createShockwave(x, y, shockwaveRadius[static_cast<uint8_t>(explosionSize)]);
+    }
     
 }
 
-// void Game::smol_shwave(int16_t shx, int16_t shy) {
-
-//     uint8_t shwaveIdx = this->shwaves.getInactiveShwave();
-
-//     if (shwaveIdx != Constants::Shwave_None) {
-
-//         Shwave &shwave = this->shwaves.shwaves[shwaveIdx];
-
-//         shwave.setX(shx);
-//         shwave.setY(shy);
-//         shwave.r=3;
-//         shwave.tr=6;
-//         shwave.col=9;
-//         shwave.speed=1;
-//         shwave.setActive(true);
-        
-//     }
-
-// }
 
 void Game::createShockwave(int16_t x, int16_t y, uint8_t maxRadius) {
 
@@ -194,28 +83,6 @@ void Game::createShockwave(int16_t x, int16_t y, uint8_t maxRadius) {
 
 }
 
-// void Game::smol_spark(int16_t sx, int16_t sy) {
-
-//     uint8_t particleIdx = this->particles.getInactiveParticle();
-
-//     if (particleIdx != Constants::Particle_None) {
-
-//         Part &particle = this->particles.particles[particleIdx];
-
-//         particle.setX(sx);
-//         particle.setY(sy);
-//         particle.setDeltaX(random(0,17) - 8);
-//         particle.setDeltaY(-random(0, 3));
-//         particle.setAge(random(0, 2));
-//         particle.setMaxAge(10 + random(0, 10));
-//         particle.setSize(this->getRandomFloat(1, 5));
-//         particle.isBlue=false;
-//         particle.spark=true;
-//         particle.setActive(true);
- 
-//     }
-
-// }
 
 void Game::renderShockwave() {
 

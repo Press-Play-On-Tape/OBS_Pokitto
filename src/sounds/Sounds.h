@@ -7,5 +7,6 @@ namespace Sounds {
     #include "Player_Hit.h"
     #include "Game_Over.h"
     #include "Typewriter.h"
+    #include "Health.h"
 
 };

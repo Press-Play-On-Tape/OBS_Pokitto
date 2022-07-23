@@ -76,7 +76,7 @@ void Game::title_Init() {
     player.reset();
 
     #ifdef SOUNDS
-        playTheme(Theme::Main);
+        this->playTheme(Theme::Main, true);
     #endif
 }   
 
@@ -153,7 +153,9 @@ void Game::title() {
                 }
                 else {
 
-                    this->playTheme(Theme::Main);
+                    #ifdef SOUNDS
+                        this->playTheme(Theme::Main, true);
+                    #endif
 
                 }
 
@@ -172,7 +174,9 @@ void Game::title() {
                 }
                 else {
 
-                    this->playTheme(Theme::Main);
+                    #ifdef SOUNDS
+                        this->playTheme(Theme::Main, true);
+                    #endif
 
                 }
 

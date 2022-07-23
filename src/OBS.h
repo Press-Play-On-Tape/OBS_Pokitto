@@ -71,7 +71,7 @@ class Game {
         void checkBossBulletCollision(Bullet &bullet);
 
         void introText(int8_t y);
-        void playTheme(Theme theme);
+        void playTheme(Theme theme, bool loop);
         void muteTheme();
         void playSoundEffect(SoundEffect soundEffect);
         bool collide(Rect rect1, Rect rect2);

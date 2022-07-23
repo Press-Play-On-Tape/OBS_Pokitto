@@ -14,16 +14,9 @@ class Health : public Point {
 
         void setType(uint8_t val)               { this->type = val; }
 
-        Rect getLargeAsteroidRect() {
+        Rect getRect() {
 
-            Rect rect = { this->getX() + 1, this->getY() + 1, 17, 17 };
-            return rect;
-
-        }
-
-        Rect getSmallAsteroidRect() {
-
-            Rect rect = { this->getX() + 1, this->getY() + 1, 17, 17 };
+            Rect rect = { this->getX() + 1, this->getY() + 1, 10, 10 };
             return rect;
 
         }

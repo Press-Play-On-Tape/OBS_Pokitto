@@ -17,7 +17,7 @@ namespace Constants {
     constexpr uint8_t Boss_Bullet_Count = 6;
     constexpr uint8_t Boss_Bullet_Random = 24;
     constexpr uint8_t Bullet_None = 255;
-    constexpr uint8_t Particle_Count = 60;
+    constexpr uint8_t Particle_Count = 75;
     constexpr uint8_t Particle_None = 255;
     constexpr uint8_t Shockwave_Count = 20;
     constexpr uint8_t Shockwave_None = 255;

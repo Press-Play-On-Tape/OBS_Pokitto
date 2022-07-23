@@ -60,7 +60,7 @@ void Game::moveBoss() {
                     uint8_t bulletIdx = bossBullets.getInactiveBullet();
 
                     if (bulletIdx != Constants::Bullet_None) {
-    // printf("fired bullet ");
+
                         Bullet &bullet = bossBullets.bullets[bulletIdx];
 
                         bullet.setY(this->boss.getY() + (this->boss.getTopHealth() > 0 && this->boss.getBottomHealth() > 0 ? (bulletIdx % 2 == 0 ? 8 : 31) : this->boss.getTopHealth() > 0 ? 8 : 31));
@@ -68,11 +68,6 @@ void Game::moveBoss() {
                         bullet.setDirection(static_cast<Direction>(random(static_cast<uint8_t>(Direction::UpLeft), static_cast<uint8_t>(Direction::DownLeft) + 1)));
                         bullet.setActive(true);
 
-    // printf(", driection %i -- %i\n", (uint8_t)bullet.direction, static_cast<uint8_t>(Direction::UpLeft) );
-
-                    }
-                    else {
-    // printf("no fired bullet ");
                     }
 
                 }
@@ -155,7 +150,11 @@ void Game::checkBossBulletCollision(Bullet &bullet) {
 void Game::launchBoss() {
 
     gameState = GameState::Game_EnemyLeaving;
-    this->playTheme(Theme::Boss);
+    gameScreenVars.bossColor = (gameScreenVars.bossColor == BossColor::Green) ? BossColor::Blue : BossColor::Green;
+
+    #ifdef SOUNDS
+        this->playTheme(Theme::Boss, true);
+    #endif
 
     for (Enemy &enemy : this->enemies) {
 

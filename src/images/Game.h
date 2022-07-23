@@ -35,7 +35,8 @@ namespace Images {
     #include "puffs/Muzzle_02.h"
 
     #include "game/BossWarning.h"
-    #include "game/GetHealth.h"
+    #include "game/GetHealth_00.h"
+    #include "game/GetHealth_01.h"
     #include "game/PowerUp.h"
 
     const uint8_t * const BigAsteroid[] = { 
@@ -46,6 +47,11 @@ namespace Images {
     const uint8_t * const ShipParticle[] = { 
         ShipParticle_00,
         ShipParticle_01,
+    };
+
+    const uint8_t * const GetHealth[] = { 
+        GetHealth_00,
+        GetHealth_01,
     };
 
     const uint8_t * const Hit[] = { 
