@@ -32,12 +32,14 @@ enum class SoundEffect : uint8_t {
     Mini_Explosion,
     Player_Hit,
     Game_Over,
-    KeyPress
+    KeyPress,
+    Health
 };
 
 enum class Theme : uint8_t {
     Main,
-    Boss
+    Boss,
+    BossExplosion
 };
     
 enum class Direction : int8_t {
@@ -75,6 +77,22 @@ enum class TitleMode : int8_t {
 	Scenario,
 	Scroll_Two,
 	Entrance,
+};
+
+enum class ExplosionSize : int8_t {
+    Small,
+    Medium,
+    Large
+};
+
+enum class ExplosionColor : int8_t {
+    Blue,
+    Red
+};
+
+enum class BossColor : int8_t {
+    Green,
+    Blue,    
 };
 
 inline SoundEffects &operator++(SoundEffects &c ) {

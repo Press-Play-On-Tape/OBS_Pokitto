@@ -57,6 +57,18 @@ class Player {
         }
 
 
+        void incHealth(uint8_t i) {
+
+            if (this->health + i >= (17 * Constants::Health_Factor) - 1) {
+                this->health = (17 * Constants::Health_Factor) - 1;
+            }
+            else {
+                this->health = (17 * Constants::Health_Factor) - 1;
+            }
+
+        }
+
+
         void reset() {
 
             this->y = 26;

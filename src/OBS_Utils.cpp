@@ -6,11 +6,11 @@ using PC = Pokitto::Core;
 using PD = Pokitto::Display;
 
 
-void Game::playTheme(Theme theme) {
+void Game::playTheme(Theme theme, bool loop) {
 
     #ifdef SOUNDS
 
-    constexpr char themes[2][17] = { "music/OBS_00.raw", "music/OBS_01.raw", };
+    constexpr char themes[3][17] = { "music/OBS_00.raw", "music/OBS_01.raw", "music/OBS_02.raw", };
 
     switch (this->cookie->sfx) {
 
@@ -19,7 +19,7 @@ void Game::playTheme(Theme theme) {
 
             if (this->mainThemeFile.openRO(themes[static_cast<uint8_t>(theme)])) {
                 auto& music = Audio::play<0>(this->mainThemeFile);
-                music.setLoop(true);
+                music.setLoop(loop);
             }
 
             break;
@@ -73,6 +73,10 @@ void Game::playSoundEffect(SoundEffect soundEffect) {
                 
                 case SoundEffect::Game_Over:
                     Audio::play<1>(Sounds::sfx_Game_Over);    
+                    break;
+                
+                case SoundEffect::Health:
+                    Audio::play<1>(Sounds::sfx_Health);    
                     break;
 
             }
@@ -159,30 +163,13 @@ void Game::moveRenderStarfield() {
         }
 
         PD::setColor(colour[i % 3]);
-        PD::drawPixel(star.getX() + gameScreenVars.xOffset, star.getY() + gameScreenVars.yOffset);
+        PD::drawPixel(star.getX() + this->gameScreenVars.xOffset, star.getY() + this->gameScreenVars.yOffset);
         
     }
 
 }
 
 void Game::moveRenderSmallAsteroids(bool alternate) {
-
-    // bool launch = true;
-
-    // switch (this->gameState) {
-
-    //     case GameState::Game_Init:
-    //     case GameState::Game:
-    //     case GameState::Game_EnemyLeaving:
-    //     case GameState::Game_BossLeaving:
-    //     case GameState::Score:
-    //         break;
-
-    //     default:
-    //         launch = false;
-    //         break;
-
-    // }
 
 
     // Move and render small asteroids ..
@@ -196,14 +183,10 @@ void Game::moveRenderSmallAsteroids(bool alternate) {
             if (smallAsteroid.getX() > Constants::SmallAsteroid_OffScreen) smallAsteroid.setX(smallAsteroid.getX() - 1);
             
             if (smallAsteroid.getX() == Constants::SmallAsteroid_OffScreen) {
-                // if (launch) {
-                    smallAsteroid.setX(110 + random(0, 96));
-                    smallAsteroid.setY(random(0, 80));
-                    smallAsteroid.setActive(true);
-                // }
-                // else {
-                //     smallAsteroid.active = false;
-                // }
+
+                smallAsteroid.setX(110 + random(0, 96));
+                smallAsteroid.setY(random(0, 80));
+                smallAsteroid.setActive(true);
 
             }
 
@@ -212,7 +195,7 @@ void Game::moveRenderSmallAsteroids(bool alternate) {
         if (!alternate || (i % 2 == 0)) {
 
             if (smallAsteroid.getActive()) {
-                PD::drawBitmap(smallAsteroid.getX() + gameScreenVars.xOffset, smallAsteroid.getY() + gameScreenVars.yOffset, Images::SmallAsteroid);
+                PD::drawBitmap(smallAsteroid.getX() + this->gameScreenVars.xOffset, smallAsteroid.getY() + this->gameScreenVars.yOffset, Images::SmallAsteroid);
             }
 
         }
@@ -265,7 +248,7 @@ void Game::moveRenderLargeAsteroids(bool alternate) {
 
             if (largeAsteroid.getActive()) {
 
-                PD::drawBitmap(largeAsteroid.getX() + gameScreenVars.xOffset, largeAsteroid.getY() + gameScreenVars.yOffset, Images::BigAsteroid[largeAsteroid.getType()]);
+                PD::drawBitmap(largeAsteroid.getX() + this->gameScreenVars.xOffset, largeAsteroid.getY() + this->gameScreenVars.yOffset, Images::BigAsteroid[largeAsteroid.getType()]);
 
             }
 
@@ -403,13 +386,11 @@ void Game::checkBulletCollision(Bullet &bullet) {
 
         if (enemy.getActive() && collide(bulletRect, enemyRect)) {
 
-            bullet.setHitObject(HitObject::Enemy);
-            bullet.setHitCount(1);
-            bullet.setMuzzleIndex(0);
-            bullet.setX(enemy.getX() - 4);
+            bullet.setActive(false);
 
             enemy.setExplodeCounter(21);
             enemy.setActive(false);
+            this->explode(enemy.getX() + 6, enemy.getY() + 6, ExplosionSize::Small, this->gameScreenVars.getColor());
             this->gameScreenVars.score = this->gameScreenVars.score + 5;
 
             PC::setFrameRate(50 + (this->gameScreenVars.score / 24));
@@ -443,10 +424,22 @@ void Game::checkBulletCollision(Bullet &bullet) {
                     this->boss.setTopHealth(this->boss.getTopHealth() - 1);
                     this->boss.setExplodeCounter(ExplodeType::TopHand, 21);
 
-                    bullet.setHitObject(HitObject::Boss);
-                    bullet.setMuzzleIndex(0);
-                    bullet.setX(-10);
                     bullet.setActive(false);
+
+                    if (this->boss.getTopHealth() == 0 && this->boss.getBottomHealth() == 0) {
+                   
+                        this->explode(boss.getX() + 10, boss.getY() + 17, ExplosionSize::Large, this->gameScreenVars.getColor());
+                        this->gameState = GameState::Game_BossLeaving;
+                        this->gameScreenVars.score = this->gameScreenVars.score + 50;
+
+                        #ifdef SOUNDS
+                            this->playTheme(Theme::BossExplosion, false);
+                        #endif
+
+                    }
+                    else {
+                        this->explode(boss.getX() + 4, boss.getY() + 8, ExplosionSize::Medium, this->gameScreenVars.getColor());
+                    }
 
                     #ifdef SOUNDS
                         playSoundEffect(SoundEffect::Mini_Explosion);
@@ -473,12 +466,23 @@ void Game::checkBulletCollision(Bullet &bullet) {
 
                     this->boss.setBottomHealth(this->boss.getBottomHealth() - 1);
                     this->boss.setExplodeCounter(ExplodeType::BottomHand, 21);
-
-                    bullet.setHitObject(HitObject::Boss);
-                    bullet.setMuzzleIndex(0);
-                    bullet.setX(-10);
                     bullet.setActive(false);
-                    
+
+                    if (this->boss.getTopHealth() == 0 && this->boss.getBottomHealth() == 0) {
+                   
+                        this->explode(boss.getX() + 14, boss.getY() + 17, ExplosionSize::Large, ExplosionColor::Red);
+                        this->gameState = GameState::Game_BossLeaving;
+                        this->gameScreenVars.score = this->gameScreenVars.score + 50;
+
+                        #ifdef SOUNDS
+                            this->playTheme(Theme::BossExplosion, false);
+                        #endif
+
+                    }
+                    else {
+                        this->explode(boss.getX() + 4, boss.getY() + 29, ExplosionSize::Medium, ExplosionColor::Red);
+                    }
+
                     #ifdef SOUNDS
                         playSoundEffect(SoundEffect::Mini_Explosion);
                     #endif   
@@ -522,7 +526,7 @@ void Game::checkBulletCollision(Bullet &bullet) {
             point.setY(bullet.getY() - 2 - this->boss.getY());
             bullet.setX(-10);
             bullet.setActive(false);
-// printf("Bottom arm\n");   
+
             return;
 
         }
@@ -540,23 +544,8 @@ void Game::checkBulletCollision(Bullet &bullet) {
             point.setY(bullet.getY() - 2 - this->boss.getY());
             bullet.setX(-10);
             bullet.setActive(false);
-// printf("Body\n");                
+
             return;
-
-        }
-
-// PD::drawRect(this->boss.x, this->boss.y + 7, 4, 3 );
-// PD::drawRect(this->boss.x, this->boss.y + 30, 4, 3 );
-// PD::drawRect(this->boss.x + 8, this->boss.y + 1, 18, 38 );
-// PD::drawRect(this->boss.x + 2, this->boss.y + 4, 16, 9 );
-// PD::drawRect(this->boss.x + 2, this->boss.y + 27, 16, 9 );
-
-
-
-        if (this->boss.getTopHealth() == 0 && this->boss.getBottomHealth() == 0) {
-
-            this->gameState = GameState::Game_BossLeaving;
-            this->gameScreenVars.score = this->gameScreenVars.score + 1;
 
         }
 
@@ -573,15 +562,39 @@ void Game::checkBulletCollision(Bullet &bullet) {
 
                     bullet.setHitObject(HitObject::BossBullet);
                     bullet.setHitCount(1);
-                    // bullet.setX(-10);
                     bossBullet.setX(-10);
                     bossBullet.setActive(false);
-// printf("Hit\n")                    ;
+
                     return;
 
                 }
 
             }
+
+        }
+
+    }
+
+
+    // Has the bullet hit a health package?
+
+    if (this->health.getActive()) {
+
+        Rect healthRect = this->health.getRect();
+
+        if (collide(bulletRect, healthRect)) {
+
+            bullet.setActive(false);
+            bullet.setX(-10);
+
+            this->health.setActive(false);
+            this->explode(this->health.getX() + 5, this->health.getY() + 5, ExplosionSize::Small, this->gameScreenVars.getColor());
+
+            #ifdef SOUNDS
+                playSoundEffect(SoundEffect::Mini_Explosion);
+            #endif            
+
+            return;
 
         }
 
@@ -603,8 +616,7 @@ void Game::printScore(uint8_t x, uint8_t y, uint16_t score) {
 
 }
 
-
-void Game::lauchHealth() {
+void Game::launchHealth() {
 
     this->health.setX(110);
     this->health.setY(random(0, 74));
@@ -612,10 +624,9 @@ void Game::lauchHealth() {
 
 }
 
-
 void Game::moveHealth() {
 
-    this->health.decX(1);
+    this->health.decX();
 
     if (this->health.getX() <= -14) {
         this->health.setActive(false);

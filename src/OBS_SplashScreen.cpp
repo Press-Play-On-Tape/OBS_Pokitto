@@ -21,9 +21,7 @@ void Game::splashScreen_Init() {
 //
 void Game::splashScreen() { 
 
-    auto justPressed = PC::buttons.pressed(BTN_A) || PC::buttons.pressed(BTN_B) || PC::buttons.pressed(BTN_C);
-
-    if (justPressed > 0) {
+    if (PC::buttons.pressed(BTN_A) || PC::buttons.pressed(BTN_B) /*|| PC::buttons.pressed(BTN_C) */) {
 
         this->gameState = GameState::Title_Init; 
 

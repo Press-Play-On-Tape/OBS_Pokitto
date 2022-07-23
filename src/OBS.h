@@ -29,6 +29,9 @@ class Game {
         Boss boss;
         Health health;
 
+        Particles particles;
+        Shockwaves shockwaves;
+
         File mainThemeFile;
 
         SplashScreenVars splashScreenVariables;
@@ -68,11 +71,22 @@ class Game {
         void checkBossBulletCollision(Bullet &bullet);
 
         void introText(int8_t y);
-        void playTheme(Theme theme);
+        void playTheme(Theme theme, bool loop);
         void muteTheme();
         void playSoundEffect(SoundEffect soundEffect);
         bool collide(Rect rect1, Rect rect2);
         void printScore(uint8_t x, uint8_t y, uint16_t score);
+
+
+        void explode(int16_t x, int16_t y, ExplosionSize explosionSize, ExplosionColor color);
+        // void smol_shwave(int16_t shx, int16_t shy);
+        void createShockwave(int16_t x, int16_t y, uint8_t maxRadius);
+        // void smol_spark(int16_t xs, int16_t sy);
+        void renderShockwave();
+        void renderParticles();
+        uint8_t getBlueShade(uint8_t page);
+        uint8_t getRedShade(uint8_t page);
+        float getRandomFloat(int8_t min, int8_t max);
 
 };
 

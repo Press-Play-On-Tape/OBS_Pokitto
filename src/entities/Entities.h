@@ -10,3 +10,7 @@
 #include "Enemy.h"
 #include "Player.h"
 #include "Health.h"
+#include "Shockwave.h"
+#include "Shockwaves.h"
+#include "Part.h"
+#include "Particles.h"
