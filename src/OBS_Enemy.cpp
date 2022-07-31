@@ -95,7 +95,7 @@ void Game::moveEnemies() {
         }
 
 
-        if (enemy.getX() <= Constants::Enemy_OffScreen) {
+        if (!enemy.getActive() || enemy.getX() <= Constants::Enemy_OffScreen) {
 
             enemy.setActive(false);
             launchEnemy(enemy);
