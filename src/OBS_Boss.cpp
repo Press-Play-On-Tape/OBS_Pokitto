@@ -131,7 +131,7 @@ void Game::checkBossBulletCollision(Bullet &bullet) {
                 
 
                 #ifdef SOUNDS
-//                                        tunes.playScore(Sounds::PlayerDies);
+//              tunes.playScore(Sounds::PlayerDies);
                 #endif  
             }
 

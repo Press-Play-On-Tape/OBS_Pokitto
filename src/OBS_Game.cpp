@@ -352,33 +352,38 @@ void Game::game() {
 
                     for (Enemy &enemy : enemies) {
 
-                        Rect enemyRect = enemy.getRect();
+                        if (enemy.getActive()) {
 
-                        if (collide(playerRect, enemyRect)) {
+                            Rect enemyRect = enemy.getRect();
 
-                            if (player.getHealth() > 0)  {
+                            if (collide(playerRect, enemyRect)) {
 
-                                player.decHealth(1);
+                                if (player.getHealth() > 0)  {
 
-                                #ifdef SOUNDS
-                                    playSoundEffect(SoundEffect::Mini_Explosion);
-                                #endif
-                            
-                                if (player.getHealth() == 0) {
-
-                                    player.setExplodeCounter(21);
-                                    this->explode(14, player.getY() + 3, ExplosionSize::Medium, this->gameScreenVars.getColor());
+                                    player.decHealth(1);
+ 
 
                                     #ifdef SOUNDS
-//                                        tunes.playScore(Sounds::PlayerDies);
-                                    #endif  
+                                        playSoundEffect(SoundEffect::Mini_Explosion);
+                                    #endif
+                                
+                                    if (player.getHealth() == 0) {
+
+                                        player.setExplodeCounter(21);
+                                        this->explode(14, player.getY() + 3, ExplosionSize::Medium, this->gameScreenVars.getColor());
+
+                                        #ifdef SOUNDS
+    //                                        tunes.playScore(Sounds::PlayerDies);
+                                        #endif  
+                                    }
+
                                 }
+                                    
+                                collision = true;
+                                break;
 
                             }
-                                
-                            collision = true;
-                            break;
-
+        
                         }
 
                     }
@@ -805,6 +810,14 @@ void Game::game() {
             break;
 
         case GameState::Game_BossEntering:
+
+            for (Enemy &enemy : this->enemies) {
+                enemy.setActive(false);
+            }
+
+            for (Asteroid &largeAsteroid : largeAsteroids) {
+                largeAsteroid.setActive(false);
+            }
 
             if (this->boss.getActive() > 90 && PC::frameCount % 64 <= 32) { PD::drawBitmap(23, 37, Images::BossWarning); }
 
